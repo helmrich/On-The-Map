@@ -8,20 +8,24 @@
 
 /* Begin PBXBuildFile section */
 		D20D51161D9555320037A471 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D51151D9555320037A471 /* AppDelegate.swift */; };
-		D20D51181D9555320037A471 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D51171D9555320037A471 /* ViewController.swift */; };
 		D20D511B1D9555320037A471 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D20D51191D9555320037A471 /* Main.storyboard */; };
 		D20D511D1D9555320037A471 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D20D511C1D9555320037A471 /* Assets.xcassets */; };
 		D20D51201D9555320037A471 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D20D511E1D9555320037A471 /* LaunchScreen.storyboard */; };
+		D20D51311D956C2A0037A471 /* UdacityClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D51301D956C2A0037A471 /* UdacityClient.swift */; };
+		D20D51331D956D0E0037A471 /* UdacityConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D51321D956D0E0037A471 /* UdacityConstants.swift */; };
+		D20D51351D9578EF0037A471 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D51341D9578EF0037A471 /* ViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		D20D51121D9555320037A471 /* On The Map.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "On The Map.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D20D51151D9555320037A471 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		D20D51171D9555320037A471 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		D20D511A1D9555320037A471 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D20D511C1D9555320037A471 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D20D511F1D9555320037A471 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D20D51211D9555320037A471 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D20D51301D956C2A0037A471 /* UdacityClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UdacityClient.swift; sourceTree = "<group>"; };
+		D20D51321D956D0E0037A471 /* UdacityConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UdacityConstants.swift; sourceTree = "<group>"; };
+		D20D51341D9578EF0037A471 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,13 +59,87 @@
 			isa = PBXGroup;
 			children = (
 				D20D51151D9555320037A471 /* AppDelegate.swift */,
-				D20D51171D9555320037A471 /* ViewController.swift */,
+				D20D51281D95558D0037A471 /* Model */,
+				D20D51291D9555940037A471 /* View */,
+				D20D512A1D95559B0037A471 /* Controller */,
+				D20D512B1D9555C90037A471 /* Assets */,
+				D20D51271D95557F0037A471 /* Supporting Files */,
+			);
+			path = "On The Map";
+			sourceTree = "<group>";
+		};
+		D20D51271D95557F0037A471 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				D20D51211D9555320037A471 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		D20D51281D95558D0037A471 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				D20D512C1D9569690037A471 /* Clients */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		D20D51291D9555940037A471 /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
+		D20D512A1D95559B0037A471 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				D20D51341D9578EF0037A471 /* ViewController.swift */,
+			);
+			name = Controller;
+			sourceTree = "<group>";
+		};
+		D20D512B1D9555C90037A471 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
 				D20D51191D9555320037A471 /* Main.storyboard */,
 				D20D511C1D9555320037A471 /* Assets.xcassets */,
 				D20D511E1D9555320037A471 /* LaunchScreen.storyboard */,
-				D20D51211D9555320037A471 /* Info.plist */,
 			);
-			path = "On The Map";
+			name = Assets;
+			sourceTree = "<group>";
+		};
+		D20D512C1D9569690037A471 /* Clients */ = {
+			isa = PBXGroup;
+			children = (
+				D20D512F1D9569FD0037A471 /* Parse */,
+				D20D512E1D9569770037A471 /* Udacity */,
+				D20D512D1D95696F0037A471 /* Facebook */,
+			);
+			name = Clients;
+			sourceTree = "<group>";
+		};
+		D20D512D1D95696F0037A471 /* Facebook */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Facebook;
+			sourceTree = "<group>";
+		};
+		D20D512E1D9569770037A471 /* Udacity */ = {
+			isa = PBXGroup;
+			children = (
+				D20D51301D956C2A0037A471 /* UdacityClient.swift */,
+				D20D51321D956D0E0037A471 /* UdacityConstants.swift */,
+			);
+			name = Udacity;
+			sourceTree = "<group>";
+		};
+		D20D512F1D9569FD0037A471 /* Parse */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Parse;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -137,8 +215,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D20D51181D9555320037A471 /* ViewController.swift in Sources */,
+				D20D51311D956C2A0037A471 /* UdacityClient.swift in Sources */,
 				D20D51161D9555320037A471 /* AppDelegate.swift in Sources */,
+				D20D51351D9578EF0037A471 /* ViewController.swift in Sources */,
+				D20D51331D956D0E0037A471 /* UdacityConstants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
