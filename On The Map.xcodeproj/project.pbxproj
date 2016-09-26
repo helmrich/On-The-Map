@@ -14,6 +14,11 @@
 		D20D51311D956C2A0037A471 /* UdacityClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D51301D956C2A0037A471 /* UdacityClient.swift */; };
 		D20D51331D956D0E0037A471 /* UdacityConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D51321D956D0E0037A471 /* UdacityConstants.swift */; };
 		D20D51351D9578EF0037A471 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D51341D9578EF0037A471 /* ViewController.swift */; };
+		D2A6714B1D971A500086B025 /* ParseConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A6714A1D971A500086B025 /* ParseConstants.swift */; };
+		D2A6714D1D971A5E0086B025 /* ParseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A6714C1D971A5E0086B025 /* ParseClient.swift */; };
+		D2A6714F1D9726B30086B025 /* StudentLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A6714E1D9726B30086B025 /* StudentLocation.swift */; };
+		D2A671531D986D9B0086B025 /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A671521D986D9B0086B025 /* Client.swift */; };
+		D2A671551D9870FD0086B025 /* ClientError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A671541D9870FD0086B025 /* ClientError.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +31,11 @@
 		D20D51301D956C2A0037A471 /* UdacityClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UdacityClient.swift; sourceTree = "<group>"; };
 		D20D51321D956D0E0037A471 /* UdacityConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UdacityConstants.swift; sourceTree = "<group>"; };
 		D20D51341D9578EF0037A471 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		D2A6714A1D971A500086B025 /* ParseConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParseConstants.swift; sourceTree = "<group>"; };
+		D2A6714C1D971A5E0086B025 /* ParseClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParseClient.swift; sourceTree = "<group>"; };
+		D2A6714E1D9726B30086B025 /* StudentLocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StudentLocation.swift; sourceTree = "<group>"; };
+		D2A671521D986D9B0086B025 /* Client.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
+		D2A671541D9870FD0086B025 /* ClientError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientError.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +122,8 @@
 		D20D512C1D9569690037A471 /* Clients */ = {
 			isa = PBXGroup;
 			children = (
+				D2A671521D986D9B0086B025 /* Client.swift */,
+				D2A671541D9870FD0086B025 /* ClientError.swift */,
 				D20D512F1D9569FD0037A471 /* Parse */,
 				D20D512E1D9569770037A471 /* Udacity */,
 				D20D512D1D95696F0037A471 /* Facebook */,
@@ -138,6 +150,9 @@
 		D20D512F1D9569FD0037A471 /* Parse */ = {
 			isa = PBXGroup;
 			children = (
+				D2A6714C1D971A5E0086B025 /* ParseClient.swift */,
+				D2A6714A1D971A500086B025 /* ParseConstants.swift */,
+				D2A6714E1D9726B30086B025 /* StudentLocation.swift */,
 			);
 			name = Parse;
 			sourceTree = "<group>";
@@ -215,9 +230,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D2A6714D1D971A5E0086B025 /* ParseClient.swift in Sources */,
 				D20D51311D956C2A0037A471 /* UdacityClient.swift in Sources */,
+				D2A6714F1D9726B30086B025 /* StudentLocation.swift in Sources */,
 				D20D51161D9555320037A471 /* AppDelegate.swift in Sources */,
 				D20D51351D9578EF0037A471 /* ViewController.swift in Sources */,
+				D2A6714B1D971A500086B025 /* ParseConstants.swift in Sources */,
+				D2A671551D9870FD0086B025 /* ClientError.swift in Sources */,
+				D2A671531D986D9B0086B025 /* Client.swift in Sources */,
 				D20D51331D956D0E0037A471 /* UdacityConstants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -382,6 +402,7 @@
 				D20D51261D9555320037A471 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
