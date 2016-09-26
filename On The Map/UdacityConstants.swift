@@ -20,4 +20,8 @@ extension UdacityClient {
     enum Method: String {
         case session
     }
+    
+    enum JSONResponseKey: String {
+        case account, key, session, id
+    }
 }
