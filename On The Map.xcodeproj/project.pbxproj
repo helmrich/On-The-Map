@@ -13,7 +13,12 @@
 		D20D51201D9555320037A471 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D20D511E1D9555320037A471 /* LaunchScreen.storyboard */; };
 		D20D51311D956C2A0037A471 /* UdacityClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D51301D956C2A0037A471 /* UdacityClient.swift */; };
 		D20D51331D956D0E0037A471 /* UdacityConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D51321D956D0E0037A471 /* UdacityConstants.swift */; };
-		D20D51351D9578EF0037A471 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D51341D9578EF0037A471 /* ViewController.swift */; };
+		D242B3C41D99DE8300094FA0 /* OpenSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D242B3C21D99DE8300094FA0 /* OpenSans-Regular.ttf */; };
+		D242B3C51D99DE8300094FA0 /* OpenSans-Semibold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D242B3C31D99DE8300094FA0 /* OpenSans-Semibold.ttf */; };
+		D242B3C71D9ABE9600094FA0 /* LoginTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D242B3C61D9ABE9600094FA0 /* LoginTextField.swift */; };
+		D242B3C91D9AC31700094FA0 /* OpenSans-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D242B3C81D9AC31700094FA0 /* OpenSans-Light.ttf */; };
+		D242B3CB1D9AC9DA00094FA0 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D242B3CA1D9AC9DA00094FA0 /* LoginViewController.swift */; };
+		D242B3CD1D9B0E0C00094FA0 /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D242B3CC1D9B0E0C00094FA0 /* ColorExtension.swift */; };
 		D2A6714B1D971A500086B025 /* ParseConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A6714A1D971A500086B025 /* ParseConstants.swift */; };
 		D2A6714D1D971A5E0086B025 /* ParseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A6714C1D971A5E0086B025 /* ParseClient.swift */; };
 		D2A6714F1D9726B30086B025 /* StudentLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A6714E1D9726B30086B025 /* StudentLocation.swift */; };
@@ -30,7 +35,12 @@
 		D20D51211D9555320037A471 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D20D51301D956C2A0037A471 /* UdacityClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UdacityClient.swift; sourceTree = "<group>"; };
 		D20D51321D956D0E0037A471 /* UdacityConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UdacityConstants.swift; sourceTree = "<group>"; };
-		D20D51341D9578EF0037A471 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		D242B3C21D99DE8300094FA0 /* OpenSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Regular.ttf"; sourceTree = "<group>"; };
+		D242B3C31D99DE8300094FA0 /* OpenSans-Semibold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Semibold.ttf"; sourceTree = "<group>"; };
+		D242B3C61D9ABE9600094FA0 /* LoginTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginTextField.swift; sourceTree = "<group>"; };
+		D242B3C81D9AC31700094FA0 /* OpenSans-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Light.ttf"; sourceTree = "<group>"; };
+		D242B3CA1D9AC9DA00094FA0 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		D242B3CC1D9B0E0C00094FA0 /* ColorExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
 		D2A6714A1D971A500086B025 /* ParseConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParseConstants.swift; sourceTree = "<group>"; };
 		D2A6714C1D971A5E0086B025 /* ParseClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParseClient.swift; sourceTree = "<group>"; };
 		D2A6714E1D9726B30086B025 /* StudentLocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StudentLocation.swift; sourceTree = "<group>"; };
@@ -81,6 +91,7 @@
 		D20D51271D95557F0037A471 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				D242B3C11D99DE7700094FA0 /* Fonts */,
 				D20D51211D9555320037A471 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -97,6 +108,8 @@
 		D20D51291D9555940037A471 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				D242B3C61D9ABE9600094FA0 /* LoginTextField.swift */,
+				D242B3CC1D9B0E0C00094FA0 /* ColorExtension.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -104,7 +117,7 @@
 		D20D512A1D95559B0037A471 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				D20D51341D9578EF0037A471 /* ViewController.swift */,
+				D242B3CA1D9AC9DA00094FA0 /* LoginViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -155,6 +168,16 @@
 				D2A6714E1D9726B30086B025 /* StudentLocation.swift */,
 			);
 			name = Parse;
+			sourceTree = "<group>";
+		};
+		D242B3C11D99DE7700094FA0 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				D242B3C81D9AC31700094FA0 /* OpenSans-Light.ttf */,
+				D242B3C21D99DE8300094FA0 /* OpenSans-Regular.ttf */,
+				D242B3C31D99DE8300094FA0 /* OpenSans-Semibold.ttf */,
+			);
+			name = Fonts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -217,9 +240,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D242B3C91D9AC31700094FA0 /* OpenSans-Light.ttf in Resources */,
 				D20D51201D9555320037A471 /* LaunchScreen.storyboard in Resources */,
 				D20D511D1D9555320037A471 /* Assets.xcassets in Resources */,
+				D242B3C41D99DE8300094FA0 /* OpenSans-Regular.ttf in Resources */,
 				D20D511B1D9555320037A471 /* Main.storyboard in Resources */,
+				D242B3C51D99DE8300094FA0 /* OpenSans-Semibold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,12 +259,14 @@
 				D2A6714D1D971A5E0086B025 /* ParseClient.swift in Sources */,
 				D20D51311D956C2A0037A471 /* UdacityClient.swift in Sources */,
 				D2A6714F1D9726B30086B025 /* StudentLocation.swift in Sources */,
+				D242B3CD1D9B0E0C00094FA0 /* ColorExtension.swift in Sources */,
 				D20D51161D9555320037A471 /* AppDelegate.swift in Sources */,
-				D20D51351D9578EF0037A471 /* ViewController.swift in Sources */,
 				D2A6714B1D971A500086B025 /* ParseConstants.swift in Sources */,
 				D2A671551D9870FD0086B025 /* ClientError.swift in Sources */,
 				D2A671531D986D9B0086B025 /* Client.swift in Sources */,
 				D20D51331D956D0E0037A471 /* UdacityConstants.swift in Sources */,
+				D242B3C71D9ABE9600094FA0 /* LoginTextField.swift in Sources */,
+				D242B3CB1D9AC9DA00094FA0 /* LoginViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
