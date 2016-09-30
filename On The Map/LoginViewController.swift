@@ -137,13 +137,13 @@ class LoginViewController: UIViewController {
                 return
             }
             
-            guard let sessionId = sessionId else {
+            guard let _ = sessionId else {
                 self.showError(message: "Couldn't get session ID.")
                 return
             }
             
-            print(sessionId)
             
+            // Login successful -> Instantiate the tab bar controller from storyboard and present it
             DispatchQueue.main.async {
                 let studentLocationTabBarController = self.storyboard!.instantiateViewController(withIdentifier: "studentLocationTabBarController")
                 self.present(studentLocationTabBarController, animated: true, completion: nil)
