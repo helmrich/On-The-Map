@@ -224,7 +224,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Blm-kC-5TV" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="605.60000000000002" y="1657.4212893553224"/>
+            <point key="canvasLocation" x="1052" y="1671"/>
         </scene>
         <!--Table-->
         <scene sceneID="sou-BY-xeI">
@@ -246,7 +246,11 @@
                                     <navigationItem title="On The Map" id="0Be-ch-kRT">
                                         <barButtonItem key="leftBarButtonItem" title="Logout" id="rLr-a2-7kn"/>
                                         <rightBarButtonItems>
-                                            <barButtonItem systemItem="refresh" id="fSj-3h-eFC"/>
+                                            <barButtonItem systemItem="refresh" id="fSj-3h-eFC">
+                                                <connections>
+                                                    <action selector="reloadTableView" destination="ZAw-Ph-wcJ" id="blO-9g-9M5"/>
+                                                </connections>
+                                            </barButtonItem>
                                             <barButtonItem image="Pin" id="opa-Ka-tK8">
                                                 <inset key="imageInsets" minX="10" minY="14" maxX="10" maxY="14"/>
                                             </barButtonItem>
@@ -256,6 +260,42 @@
                             </navigationBar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="ma1-y7-oOG">
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="studentLocationCell" id="n2u-3g-4LQ" customClass="StudentLocationTableViewCell" customModule="On_The_Map" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="n2u-3g-4LQ" id="Tmp-eZ-ghy">
+                                            <frame key="frameInset" width="375" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="YHz-bV-FZt">
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Pin" translatesAutoresizingMaskIntoConstraints="NO" id="fe1-Gr-EYo">
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="20" id="HX9-ul-tzu"/>
+                                                        <constraint firstAttribute="height" constant="30" id="Z63-4L-85t"/>
+                                                    </constraints>
+                                                </imageView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="bottomMargin" secondItem="YHz-bV-FZt" secondAttribute="bottom" constant="3" id="5ei-9m-yYN"/>
+                                                <constraint firstItem="fe1-Gr-EYo" firstAttribute="leading" secondItem="Tmp-eZ-ghy" secondAttribute="leading" constant="25" id="Avm-dN-7zp"/>
+                                                <constraint firstItem="YHz-bV-FZt" firstAttribute="trailing" secondItem="Tmp-eZ-ghy" secondAttribute="trailingMargin" constant="-16" id="Duf-49-JwK"/>
+                                                <constraint firstItem="YHz-bV-FZt" firstAttribute="leading" secondItem="fe1-Gr-EYo" secondAttribute="trailing" constant="25" id="MLM-db-I8a"/>
+                                                <constraint firstItem="fe1-Gr-EYo" firstAttribute="top" secondItem="Tmp-eZ-ghy" secondAttribute="top" constant="6" id="OeX-JR-zc4"/>
+                                                <constraint firstItem="YHz-bV-FZt" firstAttribute="top" secondItem="Tmp-eZ-ghy" secondAttribute="topMargin" constant="3" id="QJj-Fd-HPi"/>
+                                                <constraint firstAttribute="bottom" secondItem="fe1-Gr-EYo" secondAttribute="bottom" constant="7" id="Yuw-FK-RRJ"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <inset key="separatorInset" minX="65" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                        <connections>
+                                            <outlet property="studentNameLabel" destination="YHz-bV-FZt" id="7lc-9o-NXX"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
                                 <connections>
                                     <outlet property="dataSource" destination="ZAw-Ph-wcJ" id="i5f-Av-glw"/>
                                     <outlet property="delegate" destination="ZAw-Ph-wcJ" id="w1m-Lk-SP4"/>
