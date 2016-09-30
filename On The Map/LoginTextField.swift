@@ -9,12 +9,13 @@
 import UIKit
 
 class LoginTextField: UITextField {
-    // Overriding this function in order to add a CGRect with an inset of 10 at the left side to the text field
+    // Overriding this function in order to add a CGRect with a "padding" of 10 at the left side to the text field
     // so it's indented
     override func textRect(forBounds bounds: CGRect) -> CGRect {
         return CGRect(x: bounds.origin.x + 10, y: bounds.origin.y, width: bounds.width, height: bounds.height)
     }
     
+    // Adds the same "padding" of 10 to the text field when it's edited
     override func editingRect(forBounds bounds: CGRect) -> CGRect {
         return CGRect(x: bounds.origin.x + 10, y: bounds.origin.y, width: bounds.width, height: bounds.height)
     }
