@@ -47,7 +47,6 @@ class UdacityClient {
             
             // Check if there was an error
             guard error == nil else {
-                print("Error!")
                 completionHandlerForSessionId(false, nil, ClientError.parsingError("\(error!.localizedDescription)"))
                 return
             }
@@ -55,14 +54,12 @@ class UdacityClient {
             // Check if the status code was successful
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode,
                 statusCode >= 200 && statusCode <= 299 else {
-                    print("Wrong status code!")
                     completionHandlerForSessionId(false, nil, ClientError.unsuccessfulStatusCode("Didn't receive successful status code."))
                     return
             }
             
             // Check if data was retrieved
             guard let data = data else {
-                print("No data was returned!")
                 completionHandlerForSessionId(false, nil, ClientError.noDataReturned("No data was returned!"))
                 return
             }
