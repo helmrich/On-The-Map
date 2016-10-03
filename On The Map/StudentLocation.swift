@@ -23,16 +23,12 @@ struct StudentLocation {
         let longitude = dictionary[ParseClient.JSONResponseKey.longitude.rawValue] as? Double,
         let mapString = dictionary[ParseClient.JSONResponseKey.mapString.rawValue] as? String,
         let mediaUrlString = dictionary[ParseClient.JSONResponseKey.mediaURL.rawValue] as? String {
-            self.objectId = objectId
-            self.uniqueKey = uniqueKey
             self.firstName = firstName
             self.lastName = lastName
             self.mapString = mapString
             self.mediaUrlString = mediaUrlString
             self.latitude = latitude
             self.longitude = longitude
-            self.createdAt = createdAt
-            self.updatedAt = updatedAt
         } else {
             return nil
         }
