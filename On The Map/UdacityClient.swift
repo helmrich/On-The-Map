@@ -28,6 +28,56 @@ class UdacityClient {
     
     // MARK: - Functions
     
+    func getPublicUserData(method: String, forAccountKey accountKey: String, completionHandlerForPublicUserData: @escaping (_ userData: [String:Any]?, _ error: Error?) -> Void) {
+        let methodWithAccountKey = "\(method)/\(accountKey)"
+        let request = URLRequest(url: udacityUrl(withMethod: methodWithAccountKey))
+        
+        let task = session.dataTask(with: request) { (data, response, error) in
+            // Check if there was an error
+            guard error == nil else {
+                completionHandlerForPublicUserData(nil, ClientError.parsingError(error!.localizedDescription))
+                return
+            }
+            
+            // Check if the status code was successful
+            guard let statusCode = (response as? HTTPURLResponse)?.statusCode,
+                statusCode >= 200 && statusCode <= 299 else {
+                    completionHandlerForPublicUserData(nil, ClientError.unsuccessfulStatusCode("Didn't receive successful status code."))
+                    return
+            }
+            
+            // Check if data was retrieved
+            guard let data = data else {
+                completionHandlerForPublicUserData(nil, ClientError.noDataReturned("No data was returned!"))
+                return
+            }
+            
+            // Skip the first 5 characters of the response as theses characters are used for security purposes in the Udacity API
+            let newData = data.subdata(in: 5..<data.count)
+            
+            Client.convertDataWithCompletionHandler(data: newData) { result, error in
+                
+                // Check if there was an error
+                guard error == nil else {
+                    completionHandlerForPublicUserData(nil, error)
+                    return
+                }
+                
+                // Check if the result can be turned into a usable object
+                guard let result = result as? [String:Any] else {
+                    completionHandlerForPublicUserData(nil, ClientError.parsingError("Couldn't turn deserialized JSON into a usable object!"))
+                    return
+                }
+                
+                
+                
+            }
+        }
+        
+        task.resume()
+        
+    }
+    
     func postSession(method: String, userName: String, userPassword: String, completionHandlerForSessionId: @escaping (_ success: Bool, _ sessionId: String?, _ error: Error?) -> Void) {
         
         // Create mutable request and set HTTP method
@@ -47,7 +97,7 @@ class UdacityClient {
             
             // Check if there was an error
             guard error == nil else {
-                completionHandlerForSessionId(false, nil, ClientError.parsingError("\(error!.localizedDescription)"))
+                completionHandlerForSessionId(false, nil, ClientError.parsingError(error!.localizedDescription))
                 return
             }
             

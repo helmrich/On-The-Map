@@ -17,10 +17,11 @@ class StudentLocationTableViewController: UIViewController {
     // MARK: - Outlets and Actions
     
     @IBOutlet weak var studentLocationTableView: UITableView!
-    @IBOutlet weak var studentNameLabel: UILabel!
+    @IBOutlet weak var navigationBar: UINavigationBar!
+    @IBOutlet weak var logoutButton: UIBarButtonItem!
     
     @IBAction func reloadTableView() {
-        setStudentLocationTableViewData()
+        setStudentLocationTableView()
     }
     
     
@@ -28,29 +29,35 @@ class StudentLocationTableViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        // Set the navigation bar's title and the logoutButton UIBarButtonItem's font to Open Sans
+        navigationBar.titleTextAttributes = [
+            NSFontAttributeName: UIFont(name: "OpenSans", size: 17)!
+        ]
+        
+        logoutButton.setTitleTextAttributes([
+            NSFontAttributeName: UIFont(name: "OpenSans", size: 17)!
+            ], for: .normal)
         
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        setStudentLocationTableViewData()
+        setStudentLocationTableView()
     }
     
     
     // MARK: - Functions
     
-    func setStudentLocationTableViewData() {
-        print("Setting student locations...")
+    func setStudentLocationTableView() {
+        // TODO: Refine limit/skip/orderBy
         ParseClient.sharedInstance.getStudentLocations(limit: 100, skip: nil, orderBy: nil) { (studentLocations, error) in
             guard error == nil else {
-                print("Error!")
                 return
             }
             
             guard studentLocations != nil else {
-                print("Didn't receive student locations!")
                 return
             }
             
@@ -58,7 +65,6 @@ class StudentLocationTableViewController: UIViewController {
             DispatchQueue.main.async {
                 self.studentLocationTableView.reloadData()
             }
-            print("Done!")
         }
     }
 

@@ -67,12 +67,6 @@ class LoginViewController: UIViewController {
         emailTextField.delegate = self
         passwordTextField.delegate = self
         
-        // Set corner radius for buttons and text fields
-        loginButton.layer.cornerRadius = 4
-        facebookLoginButton.layer.cornerRadius = 4
-        emailTextField.layer.cornerRadius = 2
-        passwordTextField.layer.cornerRadius = 2
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {

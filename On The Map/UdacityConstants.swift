@@ -19,7 +19,7 @@ extension UdacityClient {
     
     // MARK: - Methods
     enum Method: String {
-        case session
+        case session, users
     }
     
     enum JSONResponseKey: String {

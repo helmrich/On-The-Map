@@ -9,6 +9,10 @@
 import UIKit
 
 class LoginTextField: UITextField {
+    override func awakeFromNib() {
+        layer.cornerRadius = 2
+    }
+    
     // Overriding this function in order to add a CGRect with a "padding" of 10 at the left side to the text field
     // so it's indented
     override func textRect(forBounds bounds: CGRect) -> CGRect {
