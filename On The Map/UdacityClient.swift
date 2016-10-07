@@ -28,10 +28,21 @@ class UdacityClient {
     
     // MARK: - Functions
     
-    func getPublicUserData(method: String, forAccountKey accountKey: String, completionHandlerForPublicUserData: @escaping (_ userData: [String:Any]?, _ error: Error?) -> Void) {
+    func getPublicUserData(method: String, completionHandlerForPublicUserData: @escaping (_ userData: [String:Any]?, _ error: Error?) -> Void) {
+        
+        // Check if there is an account key
+        guard let accountKey = accountKey else {
+            completionHandlerForPublicUserData(nil, ClientError.missingAccountKey("No account key was provided."))
+            return
+        }
+        
+        // Add the account key to the URL
         let methodWithAccountKey = "\(method)/\(accountKey)"
+        
+        // Create the request
         let request = URLRequest(url: udacityUrl(withMethod: methodWithAccountKey))
         
+        // Make the request
         let task = session.dataTask(with: request) { (data, response, error) in
             // Check if there was an error
             guard error == nil else {
@@ -69,7 +80,22 @@ class UdacityClient {
                     return
                 }
                 
+                // Extract the neccessary informations from the result dictionary (first name, last name)
+                guard let user = result[JSONResponseKey.user.rawValue] as? [String:Any],
+                let firstName = user[JSONResponseKey.firstName.rawValue] as? String,
+                let lastName = user[JSONResponseKey.lastName.rawValue] as? String else {
+                    completionHandlerForPublicUserData(nil, ClientError.keyNotFound("Key \(JSONResponseKey.user.rawValue), \(JSONResponseKey.firstName.rawValue) and/or \(JSONResponseKey.lastName.rawValue) not found."))
+                    return
+                }
                 
+                // Save the extracted values and the unique (account) key in a dictionary and pass it to the completion handler
+                let userData = [
+                    "firstName": firstName,
+                    "lastName": lastName,
+                    "uniqueKey": accountKey
+                ]
+                
+                completionHandlerForPublicUserData(userData, nil)
                 
             }
         }

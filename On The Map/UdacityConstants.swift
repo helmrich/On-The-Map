@@ -23,6 +23,7 @@ extension UdacityClient {
     }
     
     enum JSONResponseKey: String {
-        case account, key, session, id
+        case account, key, session, id, user
+        case firstName = "first_name", lastName = "last_name"
     }
 }

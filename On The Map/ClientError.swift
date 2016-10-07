@@ -15,4 +15,6 @@ enum ClientError: Error {
     case noResultReceived(String)
     case serializationError(String)
     case keyNotFound(String)
+    case missingAccountKey(String)
+    case noStudentLocationFound(String)
 }

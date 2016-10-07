@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="HM9-DS-K9r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="qvt-vJ-VCM">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
@@ -333,7 +333,7 @@
         <!--Information Posting View Controller-->
         <scene sceneID="88q-WV-h2A">
             <objects>
-                <viewController id="qZO-g6-XCB" customClass="InformationPostingViewController" customModule="On_The_Map" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="informationPostingVC" id="qZO-g6-XCB" customClass="InformationPostingViewController" customModule="On_The_Map" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="lpY-aN-awG"/>
                         <viewControllerLayoutGuide type="bottom" id="aHA-gv-hV8"/>
@@ -409,7 +409,7 @@
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" tag="1" contentMode="scaleToFill" text="Enter Your Location Here" textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="wUy-1g-rkb">
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="24"/>
-                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="URL" enablesReturnKeyAutomatically="YES"/>
+                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" enablesReturnKeyAutomatically="YES"/>
                                         <connections>
                                             <outlet property="delegate" destination="qZO-g6-XCB" id="i9O-g2-piR"/>
                                         </connections>
@@ -460,6 +460,7 @@
                                 </state>
                                 <connections>
                                     <action selector="findLocation:" destination="qZO-g6-XCB" eventType="touchUpInside" id="KFK-bS-T9d"/>
+                                    <action selector="submitEntry" destination="qZO-g6-XCB" eventType="touchUpInside" id="b63-bS-fNU"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -529,7 +530,7 @@
                                             <barButtonItem image="Pin" id="egG-gG-pQS">
                                                 <inset key="imageInsets" minX="12" minY="14" maxX="12" maxY="14"/>
                                                 <connections>
-                                                    <segue destination="qZO-g6-XCB" kind="presentation" id="3Ma-GY-DlQ"/>
+                                                    <action selector="goToInformationPosting" destination="6qm-zP-qTn" id="wUV-in-dtD"/>
                                                 </connections>
                                             </barButtonItem>
                                         </rightBarButtonItems>
@@ -589,7 +590,4 @@
         <image name="Table" width="30" height="30"/>
         <image name="UdacityLogoWhite" width="200" height="200"/>
     </resources>
-    <inferredMetricsTieBreakers>
-        <segue reference="3Ma-GY-DlQ"/>
-    </inferredMetricsTieBreakers>
 </document>

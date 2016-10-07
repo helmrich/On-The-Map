@@ -51,7 +51,7 @@ class StudentLocationTableViewController: UIViewController {
     // MARK: - Functions
     
     func setStudentLocationTableView() {
-        // TODO: Refine limit/skip/orderBy
+        // Get the last 100 students that posted their location
         ParseClient.sharedInstance.getStudentLocations(limit: 100, skip: nil, orderBy: nil) { (studentLocations, error) in
             guard error == nil else {
                 return

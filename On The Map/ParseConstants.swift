@@ -10,7 +10,6 @@ import Foundation
 
 extension ParseClient {
     enum Constant: String {
-        // MARK: - URL
         case scheme = "https"
         case host = "parse.udacity.com"
         case studentLocationApiPath = "/parse/classes/StudentLocation"

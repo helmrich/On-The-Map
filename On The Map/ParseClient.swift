@@ -22,11 +22,11 @@ class ParseClient {
     
     // MARK: - Functions
     
-    func getStudentLocation(withUniqueKey uniqueKey: String, completionHandlerForStudentLocation: @escaping (_ result: StudentLocation?, _ error: Error?) -> Void) {
+    func getStudentLocation(withUniqueKey uniqueKey: String, completionHandlerForStudentLocation: @escaping (_ result: StudentLocation?, _ objectId: String?, _ error: Error?) -> Void) {
         
         // Set the parameter(s)
         let parameters = [
-            ParameterKey.whereKey.rawValue: substitute(placeholder: ParameterPlaceholder.uniqueKey.rawValue, inValue: ParameterValue.uniqueKey.rawValue, withValue: uniqueKey)
+            ParameterKey.whereKey.rawValue: substitute(placeholder: ParameterPlaceholder.uniqueKey.rawValue, inValue: ParameterValue.uniqueKey.rawValue, withValue: uniqueKey)!
         ]
         
         // Create mutable request and set its properties
@@ -34,25 +34,27 @@ class ParseClient {
         request.addValue(HTTPHeaderFieldValue.applicationId.rawValue, forHTTPHeaderField: HTTPHeaderFieldName.applicationId.rawValue)
         request.addValue(HTTPHeaderFieldValue.restApiKey.rawValue, forHTTPHeaderField: HTTPHeaderFieldName.restApiKey.rawValue)
         
+        print(request.url!)
+        
         // Make the request
         let task = session.dataTask(with: request as URLRequest) { (data, response, error) in
             
             // Check if there was an error
             guard error == nil else {
-                completionHandlerForStudentLocation(nil, error!)
+                completionHandlerForStudentLocation(nil, nil, error!)
                 return
             }
             
             // Check if the status code indicates that the response was successful
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode,
                 statusCode >= 200 && statusCode <= 299 else {
-                    completionHandlerForStudentLocation(nil, ClientError.unsuccessfulStatusCode("Received unsuccessful status code."))
+                    completionHandlerForStudentLocation(nil, nil, ClientError.unsuccessfulStatusCode("Received unsuccessful status code."))
                     return
             }
             
             // Check if there is data
             guard let data = data else {
-                completionHandlerForStudentLocation(nil, ClientError.noDataReturned("No data was returned."))
+                completionHandlerForStudentLocation(nil, nil, ClientError.noDataReturned("No data was returned."))
                 return
             }
             
@@ -61,23 +63,44 @@ class ParseClient {
                 
                 // Check if there was an error
                 guard error == nil else {
-                    completionHandlerForStudentLocation(nil, error!)
+                    completionHandlerForStudentLocation(nil, nil, error!)
                     return
                 }
                 
-                // Check if there is a result and cast it to a [String:Any] dictionary
-                guard let result = result as? [String:Any] else {
-                    completionHandlerForStudentLocation(nil, ClientError.noResultReceived("Didn't receive a result from data conversion."))
+                // Check if there is a result and cast it to a dictionary, then extract the actual results from the dictionary
+                // by using the results key
+                guard let result = result as? [String:Any],
+                let results = result[JSONResponseKey.results.rawValue] as? [[String:Any]] else {
+                    completionHandlerForStudentLocation(nil, nil, ClientError.noResultReceived("Didn't receive a result from data conversion."))
+                    return
+                }
+                
+                // Check if the results array has elements which means that there is at least one student location
+                guard results.count > 0 else {
+                    // if there is no element in the results array call the completion handler and pass it nil for every value
+                    // which implies that there was no error but there is no location for the specified student
+                    completionHandlerForStudentLocation(nil, nil, nil)
+                    return
+                }
+                
+                for result in results {
+                    print("><><><><><><><><><><><><><><><><><><><><><><><><")
+                    print(result)
+                    print("><><><><><><><><><><><><><><><><><><><><><><><><")
+                }
+                
+                print(results.count)
+                
+                // Create a student location from the last dictionary of the results array which holds all the locations for this student
+                // (if the student has multiple locations which actually shouldn't be the case) as the last dictionary is the newest location
+                guard let studentLocation = StudentLocation(fromDictionary: results[results.count - 1]),
+                let objectId = results[results.count - 1][JSONResponseKey.objectId.rawValue] as? String else {
+                    completionHandlerForStudentLocation(nil, nil, ClientError.parsingError("Couldn't create student location/object ID object from the provided dictionary: \(result)"))
                     return
                 }
                 
                 // If the creation of the StudentLocation object succeeds pass it to the completion handler
-                guard let studentLocation = StudentLocation(fromDictionary: result) else {
-                    completionHandlerForStudentLocation(nil, ClientError.parsingError("Couldn't create a StudentLocation object from the provided dictionary: \(result)"))
-                    return
-                }
-                
-                completionHandlerForStudentLocation(studentLocation, nil)
+                completionHandlerForStudentLocation(studentLocation, objectId, nil)
                 
             }
             
@@ -168,6 +191,7 @@ class ParseClient {
                 for studentResult in studentResults {
                     // Fill the studentLocations array by creating StudentLocation objects from the dictionaries inside of studentResults
                     if let studentLocation = StudentLocation(fromDictionary: studentResult) {
+                        print(studentLocation)
                         studentLocations.append(studentLocation)
                     }
                 }
@@ -324,7 +348,7 @@ class ParseClient {
         return urlComponents.url!
     }
     
-    // This method takes a placeholder (e.g. uniqueKey) and checks if the placeholder exists in the given valu
+    // This method takes a placeholder (e.g. uniqueKey) and checks if the placeholder exists in the given value
     // (where it has to be written inside of curly braces). If it does it replaces the placeholder and the curly braces
     // with the passed value and returns the original string with the placeholder replaced, if not it returns nil
     func substitute(placeholder: String, inValue value: String, withValue replaceValue: String) -> String? {
