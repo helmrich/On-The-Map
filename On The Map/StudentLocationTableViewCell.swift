@@ -12,5 +12,6 @@ class StudentLocationTableViewCell: UITableViewCell {
 
     // MARK: - Outlets
     @IBOutlet weak var studentNameLabel: UILabel!
+    @IBOutlet weak var linkLabel: UILabel!
     
 }
