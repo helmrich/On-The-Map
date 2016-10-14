@@ -11,63 +11,28 @@ import UIKit
 class StudentLocationTableViewController: UIViewController {
 
     // MARK: - Properties
-    var studentLocations: [StudentLocation]? = nil
     
     
     // MARK: - Outlets and Actions
     
     @IBOutlet weak var studentLocationTableView: UITableView!
-    @IBOutlet weak var navigationBar: UINavigationBar!
-    @IBOutlet weak var logoutButton: UIBarButtonItem!
-    
-    @IBAction func reloadTableView() {
-        setStudentLocationTableView()
-    }
     
     
     // MARK: - Lifecycle methods
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        // Set the navigation bar's title and the logoutButton UIBarButtonItem's font to Open Sans
-        navigationBar.titleTextAttributes = [
-            NSFontAttributeName: UIFont(name: "OpenSans", size: 17)!
-        ]
-        
-        logoutButton.setTitleTextAttributes([
-            NSFontAttributeName: UIFont(name: "OpenSans", size: 17)!
-            ], for: .normal)
-        
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        setStudentLocationTableView()
     }
     
     
     // MARK: - Functions
     
-    func setStudentLocationTableView() {
-        // Get the last 100 students that posted their location
-        ParseClient.sharedInstance.getStudentLocations(limit: 100, skip: nil, orderBy: nil) { (studentLocations, error) in
-            guard error == nil else {
-                return
-            }
-            
-            guard studentLocations != nil else {
-                return
-            }
-            
-            self.studentLocations = studentLocations
-            DispatchQueue.main.async {
-                self.studentLocationTableView.reloadData()
-            }
+    func setStudentLocationTableView(withStudentLocations studentLocations: [StudentLocation]) {
+        DispatchQueue.main.async {
+            self.studentLocationTableView.reloadData()
         }
     }
-
 }
 
 
@@ -75,7 +40,7 @@ class StudentLocationTableViewController: UIViewController {
 
 extension StudentLocationTableViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let studentLocations = studentLocations {
+        if let studentLocations = StudentLocationDataSource.sharedInstance.studentLocations {
             return studentLocations.count
         } else {
             return 0
@@ -83,12 +48,20 @@ extension StudentLocationTableViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        // Dequeue a reusable cell by using an identifier and cast it to be of StudentLocationTableViewCell type
         let cell = tableView.dequeueReusableCell(withIdentifier: "studentLocationCell", for: indexPath) as! StudentLocationTableViewCell
-        if let studentLocations = studentLocations {
+        
+        // If the data source's studentLocations property that contains all the student locations is not nil...
+        if let studentLocations = StudentLocationDataSource.sharedInstance.studentLocations {
+            // set the current student by using the current indexPath's row property as an index for the studentLocations array...
             let currentStudent = studentLocations[indexPath.row]
+            // and Set the cell's labels to the appropriate values
             cell.studentNameLabel.text = "\(currentStudent.firstName) \(currentStudent.lastName)"
+            cell.linkLabel.text = currentStudent.mediaUrlString
         } else {
+            // If the studentLocations array is nil, set the cell's labels to empty strings
             cell.studentNameLabel.text = ""
+            cell.linkLabel.text = ""
         }
         return cell
     }
@@ -101,15 +74,13 @@ extension StudentLocationTableViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         // Check if there are student locations
-        guard let studentLocations = studentLocations else {
+        guard let studentLocations = StudentLocationDataSource.sharedInstance.studentLocations else {
             return
         }
         
-        // Get the provided URL's string from the selected student
-        let providedUrlString = studentLocations[indexPath.row].mediaUrlString
-        
-        // Check if the string can be turned into a URL
-        guard let url = URL(string: providedUrlString) else {
+        // Check if a URL can be created from the given URL string
+        guard let url = ControllerHelper.createUrl(fromUrlString: studentLocations[indexPath.row].mediaUrlString) else {
+            presentAlertController(withMessage: "Couldn't create URL")
             return
         }
         
