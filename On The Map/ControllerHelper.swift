@@ -11,14 +11,6 @@ import UIKit
 
 class ControllerHelper {
     
-    func presentAlertController(withMessage message: String, onViewController presentingViewController: UIViewController) {
-        let alertController = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        DispatchQueue.main.async {
-            presentingViewController.present(alertController, animated: true, completion: nil)
-        }
-    }
-    
     // This function takes a string (which should be a string that represents a URL) as a parameter and then returns
     // an optional URL. The purpose of this function is to provide some tolerance on how the URL is entered as some
     // students may type in an URL like "www.google.com" which basically is a correct URL but can't be used to open a
