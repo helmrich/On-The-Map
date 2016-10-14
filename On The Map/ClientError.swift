@@ -8,13 +8,13 @@
 
 import Foundation
 
-enum ClientError: Error {
-    case parsingError(String)
-    case unsuccessfulStatusCode(String)
-    case noDataReturned(String)
-    case noResultReceived(String)
-    case serializationError(String)
-    case keyNotFound(String)
-    case missingAccountKey(String)
-    case noStudentLocationFound(String)
+enum ClientError: String {
+    case parsingError = "Parsing Error"
+    case unsuccessfulStatusCode = "Unsuccessful status code"
+    case noDataReceived = "Couldn't receive data"
+    case noResultReceived = "Didn't receive result"
+    case deserializationError = "Couldn't deserialize data"
+    case keyNotFound = "Couldn't find key"
+    case missingAccountKey = "No account key provided"
+    case noStudentLocationFound = "Couldn't find student location"
 }
