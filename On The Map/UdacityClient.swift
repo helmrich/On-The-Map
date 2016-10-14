@@ -14,6 +14,7 @@ class UdacityClient {
     
     // Shared session
     let session = URLSession.shared
+    let sharedClient = Client.sharedInstance
     
     // sharedInstance singleton
     static let sharedInstance = UdacityClient()
@@ -28,64 +29,52 @@ class UdacityClient {
     
     // MARK: - Functions
     
-    func getPublicUserData(method: String, completionHandlerForPublicUserData: @escaping (_ userData: [String:Any]?, _ error: Error?) -> Void) {
+    func getPublicUserData(method: String, completionHandlerForPublicUserData: @escaping (_ userData: [String:Any]?, _ error: String?) -> Void) {
         
         // Check if there is an account key
         guard let accountKey = accountKey else {
-            completionHandlerForPublicUserData(nil, ClientError.missingAccountKey("No account key was provided."))
+            completionHandlerForPublicUserData(nil, "No account key was provided.")
             return
         }
         
         // Add the account key to the URL
         let methodWithAccountKey = "\(method)/\(accountKey)"
+        let url = udacityUrl(withMethod: methodWithAccountKey)
         
-        // Create the request
-        let request = URLRequest(url: udacityUrl(withMethod: methodWithAccountKey))
-        
-        // Make the request
-        let task = session.dataTask(with: request) { (data, response, error) in
-            // Check if there was an error
-            guard error == nil else {
-                completionHandlerForPublicUserData(nil, ClientError.parsingError(error!.localizedDescription))
+        sharedClient.taskForGET(withUrl: url, headerFields: nil) { (data, errorMessage) in
+            guard errorMessage == nil else {
+                completionHandlerForPublicUserData(nil, errorMessage)
                 return
             }
             
-            // Check if the status code was successful
-            guard let statusCode = (response as? HTTPURLResponse)?.statusCode,
-                statusCode >= 200 && statusCode <= 299 else {
-                    completionHandlerForPublicUserData(nil, ClientError.unsuccessfulStatusCode("Didn't receive successful status code."))
-                    return
-            }
-            
-            // Check if data was retrieved
             guard let data = data else {
-                completionHandlerForPublicUserData(nil, ClientError.noDataReturned("No data was returned!"))
+                completionHandlerForPublicUserData(nil, "Didn't receive data.")
                 return
             }
             
             // Skip the first 5 characters of the response as theses characters are used for security purposes in the Udacity API
             let newData = data.subdata(in: 5..<data.count)
             
-            Client.convertDataWithCompletionHandler(data: newData) { result, error in
+            Client.convertDataWithCompletionHandler(data: newData) { result, errorMessage in
                 
                 // Check if there was an error
-                guard error == nil else {
-                    completionHandlerForPublicUserData(nil, error)
+                guard errorMessage == nil else {
+                    completionHandlerForPublicUserData(nil, errorMessage!)
                     return
                 }
                 
                 // Check if the result can be turned into a usable object
                 guard let result = result as? [String:Any] else {
-                    completionHandlerForPublicUserData(nil, ClientError.parsingError("Couldn't turn deserialized JSON into a usable object!"))
+                    completionHandlerForPublicUserData(nil, "Couldn't turn deserialized JSON into a usable object!")
                     return
                 }
                 
                 // Extract the neccessary informations from the result dictionary (first name, last name)
                 guard let user = result[JSONResponseKey.user.rawValue] as? [String:Any],
-                let firstName = user[JSONResponseKey.firstName.rawValue] as? String,
-                let lastName = user[JSONResponseKey.lastName.rawValue] as? String else {
-                    completionHandlerForPublicUserData(nil, ClientError.keyNotFound("Key \(JSONResponseKey.user.rawValue), \(JSONResponseKey.firstName.rawValue) and/or \(JSONResponseKey.lastName.rawValue) not found."))
-                    return
+                    let firstName = user[JSONResponseKey.firstName.rawValue] as? String,
+                    let lastName = user[JSONResponseKey.lastName.rawValue] as? String else {
+                        completionHandlerForPublicUserData(nil, "Key \(JSONResponseKey.user.rawValue), \(JSONResponseKey.firstName.rawValue) and/or \(JSONResponseKey.lastName.rawValue) not found.")
+                        return
                 }
                 
                 // Save the extracted values and the unique (account) key in a dictionary and pass it to the completion handler
@@ -99,12 +88,10 @@ class UdacityClient {
                 
             }
         }
-        
-        task.resume()
-        
     }
     
-    func postSession(method: String, userName: String, userPassword: String, completionHandlerForSessionId: @escaping (_ success: Bool, _ sessionId: String?, _ error: Error?) -> Void) {
+    
+    func postSession(method: String, userName: String, userPassword: String, facebookAccessToken: String? = nil, completionHandlerForSessionId: @escaping (_ sessionId: String?, _ errorMessage: String?) -> Void) {
         
         // Create mutable request and set HTTP method
         let request = NSMutableURLRequest(url: udacityUrl(withMethod: method))
@@ -115,7 +102,15 @@ class UdacityClient {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         // HTTP body
-        let jsonBody = "{\"udacity\": {\"username\": \"\(userName)\", \"password\": \"\(userPassword)\"}}"
+        let jsonBody: String
+        if let facebookAccessToken = facebookAccessToken {
+            // If there is a facebook access token send it with the JSON body,
+            jsonBody = "{\"facebook_mobile\": {\"access_token\": \"\(facebookAccessToken)\"}}"
+            print(jsonBody)
+        } else {
+            // if not, use the provided Udacity credentials
+            jsonBody = "{\"udacity\": {\"username\": \"\(userName)\", \"password\": \"\(userPassword)\"}}"
+        }
         request.httpBody = jsonBody.data(using: .utf8)
         
         // Make the request and cast the NSMutableURLRequest as a URL request when passing it to the data task
@@ -123,56 +118,67 @@ class UdacityClient {
             
             // Check if there was an error
             guard error == nil else {
-                completionHandlerForSessionId(false, nil, ClientError.parsingError(error!.localizedDescription))
+                completionHandlerForSessionId(nil, error!.localizedDescription)
+                return
+            }
+            
+            // Check if there is a status code
+            guard let statusCode = (response as? HTTPURLResponse)?.statusCode else {
+                completionHandlerForSessionId(nil, "Couldn't get status code")
+                return
+            }
+            
+            // Check if the status code is 403 (forbidden) which means that the provided password and/or email is wrong
+            guard statusCode != 403 else {
+                completionHandlerForSessionId(nil, UdacityClientError.wrongCredentials.rawValue)
                 return
             }
             
             // Check if the status code was successful
-            guard let statusCode = (response as? HTTPURLResponse)?.statusCode,
-                statusCode >= 200 && statusCode <= 299 else {
-                    completionHandlerForSessionId(false, nil, ClientError.unsuccessfulStatusCode("Didn't receive successful status code."))
+            guard statusCode >= 200 && statusCode <= 299 else {
+                    completionHandlerForSessionId(nil, ClientError.unsuccessfulStatusCode.rawValue)
                     return
             }
             
             // Check if data was retrieved
             guard let data = data else {
-                completionHandlerForSessionId(false, nil, ClientError.noDataReturned("No data was returned!"))
+                completionHandlerForSessionId(nil, ClientError.noDataReceived.rawValue)
                 return
             }
             
             // Skip the first 5 characters of the response as theses characters are used for security purposes in the Udacity API
             let newData = data.subdata(in: 5..<data.count)
             
-            Client.convertDataWithCompletionHandler(data: newData) { result, error in
+            Client.convertDataWithCompletionHandler(data: newData) { result, errorMessage in
                 
                 // Check if there was an error
-                guard error == nil else {
-                    completionHandlerForSessionId(false, nil, error)
+                guard errorMessage == nil else {
+                    completionHandlerForSessionId(nil, errorMessage!)
                     return
                 }
                 
                 // Check if the result can be turned into a usable object
                 guard let result = result as? [String:Any] else {
-                    completionHandlerForSessionId(false, nil, ClientError.parsingError("Couldn't turn deserialized JSON into a usable object!"))
+                    completionHandlerForSessionId(nil, ClientError.deserializationError.rawValue)
                     return
                 }
                 
                 // Extract the needed value from the parsed data (session ID)
                 guard let session = result[JSONResponseKey.session.rawValue] as? [String:Any],
                     let sessionId = session[JSONResponseKey.id.rawValue] as? String else {
-                        completionHandlerForSessionId(false, nil, ClientError.keyNotFound("Couldn't find key [\(JSONResponseKey.session.rawValue)][\(JSONResponseKey.id.rawValue)]"))
+                        completionHandlerForSessionId(nil, ClientError.keyNotFound.rawValue)
                         return
                 }
                 
                 // Extract the needed value from the parsed data (account key)
                 guard let account = result[JSONResponseKey.account.rawValue] as? [String:Any],
                     let accountKey = account[JSONResponseKey.key.rawValue] as? String else {
-                        completionHandlerForSessionId(false, nil, ClientError.keyNotFound("Couldn't find key [\(JSONResponseKey.account.rawValue)][\(JSONResponseKey.key.rawValue)]"))
+                        completionHandlerForSessionId(nil, ClientError.keyNotFound.rawValue)
                         return
                 }
                 
                 // Call the completion handler and pass it the session ID ...
-                completionHandlerForSessionId(true, sessionId, nil)
+                completionHandlerForSessionId(sessionId, nil)
                 // and set the UdacityClient's sessionId and accountKey properties
                 self.sessionId = sessionId
                 self.accountKey = accountKey
@@ -184,7 +190,11 @@ class UdacityClient {
         
     }
     
-    func deleteSession(completionHandlerForDelete: @escaping (_ success: Bool) -> Void) {
+    func logout(completionHandlerForLogout: @escaping (_ success: Bool, _ errorMessage: String?) -> Void) {
+        
+        // Log out from Facebook
+        FBSDKLoginManager().logOut()
+        
         // Create mutable request and set its HTTP method
         let request = NSMutableURLRequest(url: udacityUrl(withMethod: Method.session.rawValue))
         request.httpMethod = "DELETE"
@@ -205,48 +215,52 @@ class UdacityClient {
         
         // Make the request
         let task = session.dataTask(with: request as URLRequest) { (data, response, error) in
+            // Check if there was an error
             guard error == nil else {
-                completionHandlerForDelete(false)
+                completionHandlerForLogout(false, error!.localizedDescription)
                 return
             }
             
+            // Check if the status code was successful
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode,
                 statusCode >= 200 && statusCode <= 299 else {
-                    completionHandlerForDelete(false)
+                    completionHandlerForLogout(false, ClientError.unsuccessfulStatusCode.rawValue)
                     return
             }
             
+            // Check if data was retrieved
             guard let data = data else {
-                completionHandlerForDelete(false)
+                completionHandlerForLogout(false, ClientError.noDataReceived.rawValue)
                 return
             }
             
             // Skip first 5 characters of the response
             let newData = data.subdata(in: Range(5...data.count))
             
-            Client.convertDataWithCompletionHandler(data: newData) { result, error in
+            Client.convertDataWithCompletionHandler(data: newData) { result, errorMessage in
                 
                 // Check if there was an error
                 guard error == nil else {
-                    completionHandlerForDelete(false)
+                    completionHandlerForLogout(false, errorMessage)
                     return
                 }
                 
                 // Check if the result can be turned into a usable object
                 guard let result = result as? [String:Any] else {
-                    completionHandlerForDelete(false)
+                    completionHandlerForLogout(false, ClientError.noResultReceived.rawValue)
                     return
                 }
                 
                 // Check if the session key can be found in the result
                 // which verifies that the wanted object was returned
                 guard let _ = result[JSONResponseKey.session.rawValue] else {
-                    completionHandlerForDelete(false)
+                    completionHandlerForLogout(false, ClientError.keyNotFound.rawValue)
                     return
                 }
                 
+                // Reset the session ID and call the completion handler
                 self.sessionId = nil
-                completionHandlerForDelete(true)
+                completionHandlerForLogout(true, nil)
                 
             }
             
