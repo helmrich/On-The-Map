@@ -16,17 +16,20 @@ class LoginViewController: UIViewController {
     // MARK: - Outlets and Actions
     @IBOutlet weak var emailTextField: LoginTextField!
     @IBOutlet weak var passwordTextField: LoginTextField!
-    @IBOutlet weak var loginButton: UIButton!
-    @IBOutlet weak var facebookLoginButton: UIButton!
+    @IBOutlet weak var loginButton: OnTheMapButton!
+    @IBOutlet weak var facebookButton: OnTheMapButton!
     @IBOutlet weak var errorLabel: UILabel!
     @IBOutlet weak var udacityLogoImageView: UIImageView!
     
-    @IBAction func loginButtonTouchedDown(_ sender: AnyObject) {
-        loginButton.backgroundColor = UIColor.darkenColor(originalRed: 1, originalGreen: 1, originalBlue: 1, by: 0.05)
+    @IBAction func buttonTouchDown(_ sender: OnTheMapButton) {
+        sender.set(backgroundColorAlphaValue: 0.7, titleColorAlphaValue: 1)
     }
     
-    @IBAction func loginButtonTouchedUp(_ sender: AnyObject) {
-        loginButton.backgroundColor = UIColor.white
+    @IBAction func buttonTouchUp(_ sender: OnTheMapButton) {
+        sender.set(backgroundColorAlphaValue: 1, titleColorAlphaValue: 1)
+    }
+    
+    @IBAction func loginButtonTouchUp(_ sender: AnyObject) {
         errorLabel.isHidden = true
         // Check if a username and password were provided ...
         if let username = emailTextField.text,
@@ -34,27 +37,13 @@ class LoginViewController: UIViewController {
             if username.characters.count > 0 && password.characters.count > 0 {
                 // if so, try to log in with the provided values
                 login(username: username, password: password)
+                loginButton.addCenteredActivityIndicator()
+                loginButton.toggleLoadingStatus()
             } else {
                 // if not, display an error
                 showError(message: "Please provide a username and password.")
             }
         }
-    }
-    
-    @IBAction func loginButtonTouchedUpOutside(_ sender: AnyObject) {
-        loginButton.backgroundColor = UIColor.white
-    }
-    
-    @IBAction func facebookLoginButtonTouchedDown(_ sender: AnyObject) {
-        facebookLoginButton.backgroundColor = UIColor.darkenColor(originalRed: 59 / 255, originalGreen: 89 / 255, originalBlue: 152 / 255, by: 0.05)
-    }
-    
-    @IBAction func facebookLoginButtonTouchedUp(_ sender: AnyObject) {
-        facebookLoginButton.backgroundColor = UIColor(red: 59 / 255, green: 89 / 255, blue: 152 / 255, alpha: 1)
-    }
-    
-    @IBAction func facebookLoginButtonTouchedUpOutside(_ sender: AnyObject) {
-        facebookLoginButton.backgroundColor = UIColor(red: 59 / 255, green: 89 / 255, blue: 152 / 255, alpha: 1)
     }
     
     
@@ -67,12 +56,27 @@ class LoginViewController: UIViewController {
         emailTextField.delegate = self
         passwordTextField.delegate = self
         
+        // Add the facebook login button, make the LoginViewController its delegate and set its constraints
+        let facebookLoginButton = FBSDKLoginButton()
+        facebookLoginButton.delegate = self
+        view.addSubview(facebookLoginButton)
+        facebookLoginButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            NSLayoutConstraint(item: facebookLoginButton, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 16),
+            NSLayoutConstraint(item: facebookLoginButton, attribute: .trailing, relatedBy: .equal, toItem: view, attribute: .trailing, multiplier: 1, constant: -16),
+            NSLayoutConstraint(item: facebookLoginButton, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1, constant: -20),
+            NSLayoutConstraint(item: facebookLoginButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 50)
+            ])
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        // Make the password text field empty so that the password isn't filled out
+        // after logging out
+        passwordTextField.text = ""
         
-        // Add the observers for keyboard notifications
+        // Add observers for keyboard notifications
         NotificationCenter.default.addObserver(forName: .UIKeyboardWillShow, object: nil, queue: nil, using: keyboardWillShow)
         NotificationCenter.default.addObserver(forName: .UIKeyboardWillHide, object: nil, queue: nil, using: keyboardWillHide)
     }
@@ -80,7 +84,7 @@ class LoginViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        // Remove the observers for keyboard notifications
+        // Remove observers for keyboard notifications
         NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillShow, object: nil)
         NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillHide, object: nil)
     }
@@ -120,14 +124,15 @@ class LoginViewController: UIViewController {
     // MARK: - Functions
     
     func login(username: String, password: String) {
-        UdacityClient.sharedInstance.postSession(method: UdacityClient.Method.session.rawValue, userName: username, userPassword: password) { (success, sessionId, error) in
-            guard error == nil else {
-                self.showError(message: "Received an error when trying to log in. Try again.")
-                return
+        UdacityClient.sharedInstance.postSession(method: UdacityClient.Method.session.rawValue, userName: username, userPassword: password) { (sessionId, errorMessage) in
+            
+            DispatchQueue.main.async {
+                self.loginButton.toggleLoadingStatus()
             }
             
-            guard success else {
-                self.showError(message: "Unsuccessful response.")
+            guard errorMessage == nil else {
+                self.presentAlertController(withMessage: errorMessage!)
+                self.showError(message: errorMessage!)
                 return
             }
             
@@ -139,7 +144,7 @@ class LoginViewController: UIViewController {
             
             // Login successful -> Instantiate the tab bar controller from storyboard and present it
             DispatchQueue.main.async {
-                let studentLocationTabBarController = self.storyboard!.instantiateViewController(withIdentifier: "studentLocationTabBarController")
+                let studentLocationTabBarController = self.storyboard!.instantiateViewController(withIdentifier: "studentLocationNavigationController")
                 self.present(studentLocationTabBarController, animated: true, completion: nil)
             }
             
@@ -169,6 +174,51 @@ extension LoginViewController: UITextFieldDelegate {
         // which means that it will be deselected
         textField.resignFirstResponder()
         return true
+    }
+}
+
+// MARK: - Facebook SDK login button delegate
+extension LoginViewController: FBSDKLoginButtonDelegate {
+    func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!) {
+    }
+    
+    func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
+        guard error == nil else {
+            presentAlertController(withMessage: error.localizedDescription)
+            return
+        }
+        
+        guard let result = result else {
+            presentAlertController(withMessage: "Couldn't get result from facebook login.")
+            return
+        }
+        
+        guard result.token != nil else {
+            presentAlertController(withMessage: "Facebook login failed. Try again.")
+            return
+        }
+        
+        let accessToken = result.token.tokenString
+        
+        UdacityClient.sharedInstance.postSession(method: UdacityClient.Method.session.rawValue, userName: "", userPassword: "", facebookAccessToken: accessToken) { (sessionId, errorMessage) in
+            guard errorMessage == nil else {
+                self.presentAlertController(withMessage: errorMessage!)
+                return
+            }
+            
+            guard let _ = sessionId else {
+                self.presentAlertController(withMessage: "Couldn't get session ID.")
+                return
+            }
+            
+            // Login successful -> Instantiate the tab bar controller from storyboard and present it
+            DispatchQueue.main.async {
+                let studentLocationTabBarController = self.storyboard!.instantiateViewController(withIdentifier: "studentLocationNavigationController")
+                self.present(studentLocationTabBarController, animated: true, completion: nil)
+            }
+            
+        }
+        
     }
 }
 
