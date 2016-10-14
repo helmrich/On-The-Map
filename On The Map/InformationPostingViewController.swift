@@ -28,77 +28,105 @@ class InformationPostingViewController: UIViewController {
     @IBOutlet weak var locationTextContainerView: UIView!
     @IBOutlet weak var findButtonContainerView: UIView!
     @IBOutlet weak var questionTextStackView: UIStackView!
+    @IBOutlet weak var geocodingActivityIndicatorView: UIActivityIndicatorView!
+    
+    @IBAction func buttonTouchDown(_ sender: OnTheMapButton) {
+        sender.set(backgroundColorAlphaValue: 0.7, titleColorAlphaValue: 1)
+    }
+    
+    @IBAction func buttonTouchUp(_ sender: OnTheMapButton) {
+        sender.set(backgroundColorAlphaValue: 1, titleColorAlphaValue: 1)
+    }
     
     @IBAction func cancel(_ sender: AnyObject) {
         dismiss(animated: true, completion: nil)
     }
     
     @IBAction func findLocation(_ sender: AnyObject) {
-        UIView.animate(withDuration: 0.5) {
-            self.questionTextStackView.alpha = 0
-            self.linkTextView.alpha = 1
-            self.locationTextContainerView.alpha = 0
-            self.findButtonContainerView.alpha = 0
-            self.submitButton.alpha = 1
-            self.cancelButton.tintColor = UIColor.white
-            self.view.backgroundColor = UIColor(red: 81 / 255, green: 137 / 255, blue: 180 / 255, alpha: 1)
+        
+        setSubmitView(toShow: true)
+        findButton.addCenteredActivityIndicator()
+        findButton.toggleLoadingStatus()
+        
+        
+        self.getLocation(fromString: self.locationTextView.text) { (coordinate, region, errorMessage) in
             
-            self.getLocation(fromString: self.locationTextView.text) { (coordinate, region, errorString) in
-                guard errorString == nil else {
-                    print(errorString)
-                    return
-                }
-                
-                guard let coordinate = coordinate else {
-                    print("Couldn't get coordinate.")
-                    return
-                }
-                
-                // If there is a coordinate, assign it to the view controller's coordinate property
-                self.coordinate = coordinate
-                
-                guard let region = region else {
-                    print("Couldn't get region.")
-                    return
-                }
-                
-                // Set the coordinate region with the region's center as the center coordinate and the region's radius as
-                // the latitudinal and longitudinal meters
-                let coordinateRegion = MKCoordinateRegionMakeWithDistance(coordinate, region.radius, region.radius)
-                
-                // Create an annotation and set its coordinate to the location's coordinate
-                let annotation = MKPointAnnotation()
-                annotation.coordinate = coordinate
-                
-                // Add the annotation to the map view and set the region with an animation
-                self.mapView.addAnnotation(annotation)
-                self.mapView.setRegion(coordinateRegion, animated: true)
-                
+            DispatchQueue.main.async {
+                self.findButton.toggleLoadingStatus()
+                self.geocodingActivityIndicatorView.stopAnimating()
+                self.geocodingActivityIndicatorView.alpha = 0
             }
+            
+            guard errorMessage == nil else {
+                self.presentAlertController(withMessage: errorMessage!)
+                self.setSubmitView(toShow: false)
+                return
+            }
+            
+            guard let coordinate = coordinate else {
+                self.presentAlertController(withMessage: "Couldn't get coordinate.")
+                self.setSubmitView(toShow: false)
+                return
+            }
+            
+            // If there is a coordinate, assign it to the view controller's coordinate property
+            self.coordinate = coordinate
+            
+            guard let region = region else {
+                self.presentAlertController(withMessage: "Couldn't get region.")
+                self.setSubmitView(toShow: false)
+                return
+            }
+            
+            // Set the coordinate region with the region's center as the center coordinate and the region's radius as
+            // the latitudinal and longitudinal meters
+            let coordinateRegion = MKCoordinateRegionMakeWithDistance(coordinate, region.radius, region.radius)
+            
+            // Create an annotation and set its coordinate to the location's coordinate
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = coordinate
+            
+            // Add the annotation to the map view and set the region with an animation
+            self.mapView.addAnnotation(annotation)
+            self.mapView.setRegion(coordinateRegion, animated: true)
+            
         }
     }
     
     @IBAction func submitEntry() {
         
-        // Unwrap the locationTextView and linkTextView's texts
-        guard let locationText = locationTextView.text,
-        let linkText = linkTextView.text else {
-            print("No location and/or link provided")
+        // Check if the link text's value is the default value and display an alert if it's the case
+        guard linkTextView.text != "Enter a Link to Share Here" else {
+            presentAlertController(withMessage: "Please provide a link.")
             return
         }
         
+        // Unwrap the locationTextView and linkTextView's texts
+        guard let locationText = locationTextView.text,
+        let linkText = linkTextView.text else {
+            presentAlertController(withMessage: "No location and/or link provided")
+            return
+        }
+        
+        self.submitButton.addCenteredActivityIndicator()
+        self.submitButton.toggleLoadingStatus()
+        
         // Get the public user data
-        UdacityClient.sharedInstance.getPublicUserData(method: UdacityClient.Method.users.rawValue) { (userData, error) in
+        UdacityClient.sharedInstance.getPublicUserData(method: UdacityClient.Method.users.rawValue) { (userData, errorMessage) in
+            
+            DispatchQueue.main.async {
+                self.submitButton.toggleLoadingStatus()
+            }
             
             // Check if there was an error
-            guard error == nil else {
-                print(error)
+            guard errorMessage == nil else {
+                self.presentAlertController(withMessage: "\(errorMessage!) Try again.")
                 return
             }
             
             // Check if user data was received
             guard let userData = userData else {
-                print("Couldn't get user data.")
+                self.presentAlertController(withMessage: "Couldn't get user data.")
                 return
             }
             
@@ -106,13 +134,13 @@ class InformationPostingViewController: UIViewController {
             guard let firstName = userData["firstName"] as? String,
                 let lastName = userData["lastName"] as? String,
                 let uniqueKey = userData["uniqueKey"] as? String else {
-                    print("Couldn't find keys in the userData dictionary.")
+                    self.presentAlertController(withMessage: "Couldn't find keys in the userData dictionary.")
                     return
             }
             
             // Check if the view controller's coordinate property is not nil
             guard let coordinate = self.coordinate else {
-                print("Couldn't get coordinate")
+                self.presentAlertController(withMessage: "Couldn't get coordinate")
                 return
             }
             
@@ -128,13 +156,13 @@ class InformationPostingViewController: UIViewController {
                     
                     // Check if there was an error
                     guard error == nil else {
-                        print("\(error)")
+                        self.presentAlertController(withMessage: "Couldn't update location. Try again.")
                         return
                     }
                     
                     // Check if there is an object ID
                     guard let objectId = objectId else {
-                        print("Couldn't find student location for the specified student.")
+                        self.presentAlertController(withMessage: "Couldn't find student location for the specified student.")
                         return
                     }
                     
@@ -142,8 +170,9 @@ class InformationPostingViewController: UIViewController {
                     ParseClient.sharedInstance.updateStudentLocation(withStudentLocation: studentLocation, forObjectId: objectId) { success in
                         if success {
                             print("Updated location successfully.")
+                            self.dismiss(animated: true, completion: nil)
                         } else {
-                            print("Couldn't update location.")
+                            self.presentAlertController(withMessage: "Couldn't update location. Try again.")
                         }
                     }
                 }
@@ -156,9 +185,7 @@ class InformationPostingViewController: UIViewController {
                         self.dismiss(animated: true, completion: nil)
                         return
                     }
-
-                    // TODO: Show error
-                    print("Couldn't post entry.")
+                    self.presentAlertController(withMessage: "Couldn't post location. Try again.")
 
                 }
             }
@@ -168,15 +195,11 @@ class InformationPostingViewController: UIViewController {
     
     // MARK: - Lifecycle methods
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-    }
-    
     
     // MARK: - Functions
     
     func getLocation(fromString string: String, completionHandlerForLocation: @escaping (_ coordinate: CLLocationCoordinate2D?, _ region: CLCircularRegion?, _ error: String?) -> Void) {
+        
         let geocoder = CLGeocoder()
         
         geocoder.geocodeAddressString(string) { (placemark, error) in
@@ -206,6 +229,38 @@ class InformationPostingViewController: UIViewController {
             
         }
         
+    }
+    
+    func setSubmitView(toShow shouldShow: Bool) {
+        if shouldShow {
+            UIView.animate(withDuration: 0.5) {
+                self.questionTextStackView.alpha = 0
+                self.linkTextView.alpha = 1
+                self.locationTextContainerView.alpha = 0
+                self.findButtonContainerView.alpha = 0
+                self.submitButton.alpha = 1
+                self.cancelButton.tintColor = UIColor.white
+                self.geocodingActivityIndicatorView.alpha = 1
+                self.view.backgroundColor = UIColor(red: 81 / 255, green: 137 / 255, blue: 180 / 255, alpha: 1)
+            }
+            
+            geocodingActivityIndicatorView.startAnimating()
+            
+        } else {
+            UIView.animate(withDuration: 0.5) {
+                self.questionTextStackView.alpha = 1
+                self.linkTextView.alpha = 0
+                self.locationTextContainerView.alpha = 1
+                self.findButtonContainerView.alpha = 1
+                self.submitButton.alpha = 0
+                self.cancelButton.tintColor = UIColor(red: 81 / 255, green: 137 / 255, blue: 180 / 255, alpha: 1)
+                self.geocodingActivityIndicatorView.alpha = 0
+                self.view.backgroundColor = UIColor.white
+            }
+            
+            geocodingActivityIndicatorView.stopAnimating()
+            
+        }
     }
 
 }
