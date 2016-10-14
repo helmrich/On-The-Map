@@ -13,6 +13,11 @@ class ParseClient {
     // MARK: - Properties
     
     let session = URLSession.shared
+    let parseHeaderFields = [
+        HTTPHeaderFieldName.applicationId.rawValue: HTTPHeaderFieldValue.applicationId.rawValue,
+        HTTPHeaderFieldName.restApiKey.rawValue: HTTPHeaderFieldValue.restApiKey.rawValue
+    ]
+    let sharedClient = Client.sharedInstance
     
     // sharedInstance singleton
     static let sharedInstance = ParseClient()
@@ -22,57 +27,49 @@ class ParseClient {
     
     // MARK: - Functions
     
-    func getStudentLocation(withUniqueKey uniqueKey: String, completionHandlerForStudentLocation: @escaping (_ result: StudentLocation?, _ objectId: String?, _ error: Error?) -> Void) {
+    func getStudentLocation(withUniqueKey uniqueKey: String, completionHandlerForStudentLocation: @escaping (_ result: StudentLocation?, _ objectId: String?, _ errorMessage: String?) -> Void) {
         
-        // Set the parameter(s)
+        // Substitute the placeholder(s) in the parameter value and set the parameter(s)
+        guard let substitutedParameter = substitute(placeholder: ParameterPlaceholder.uniqueKey.rawValue, inValue: ParameterValue.uniqueKey.rawValue, withValue: uniqueKey) else {
+            print("Couldn't replace placeholder \(ParameterPlaceholder.uniqueKey.rawValue) with value \(uniqueKey)")
+            return
+        }
+        
         let parameters = [
-            ParameterKey.whereKey.rawValue: substitute(placeholder: ParameterPlaceholder.uniqueKey.rawValue, inValue: ParameterValue.uniqueKey.rawValue, withValue: uniqueKey)!
+            ParameterKey.whereKey.rawValue: substitutedParameter
         ]
         
-        // Create mutable request and set its properties
-        let request = NSMutableURLRequest(url: getParseUrl(withParameters: parameters, andPathExtension: nil))
-        request.addValue(HTTPHeaderFieldValue.applicationId.rawValue, forHTTPHeaderField: HTTPHeaderFieldName.applicationId.rawValue)
-        request.addValue(HTTPHeaderFieldValue.restApiKey.rawValue, forHTTPHeaderField: HTTPHeaderFieldName.restApiKey.rawValue)
+        let url = getParseUrl(withParameters: parameters, andPathExtension: nil)
         
-        print(request.url!)
-        
-        // Make the request
-        let task = session.dataTask(with: request as URLRequest) { (data, response, error) in
+        sharedClient.taskForGET(withUrl: url, headerFields: parseHeaderFields) { (data, errorMessage) in
             
             // Check if there was an error
-            guard error == nil else {
-                completionHandlerForStudentLocation(nil, nil, error!)
+            guard errorMessage == nil else {
+                completionHandlerForStudentLocation(nil, nil, errorMessage!)
                 return
             }
-            
-            // Check if the status code indicates that the response was successful
-            guard let statusCode = (response as? HTTPURLResponse)?.statusCode,
-                statusCode >= 200 && statusCode <= 299 else {
-                    completionHandlerForStudentLocation(nil, nil, ClientError.unsuccessfulStatusCode("Received unsuccessful status code."))
-                    return
-            }
-            
-            // Check if there is data
+
+            // Check if data was received
             guard let data = data else {
-                completionHandlerForStudentLocation(nil, nil, ClientError.noDataReturned("No data was returned."))
+                completionHandlerForStudentLocation(nil, nil, ClientError.noDataReceived.rawValue)
                 return
             }
             
             // Convert the raw data into a usable object
-            Client.convertDataWithCompletionHandler(data: data) { (result, error) in
+            Client.convertDataWithCompletionHandler(data: data) { (result, errorMessage) in
                 
                 // Check if there was an error
-                guard error == nil else {
-                    completionHandlerForStudentLocation(nil, nil, error!)
+                guard errorMessage == nil else {
+                    completionHandlerForStudentLocation(nil, nil, errorMessage!)
                     return
                 }
                 
                 // Check if there is a result and cast it to a dictionary, then extract the actual results from the dictionary
                 // by using the results key
                 guard let result = result as? [String:Any],
-                let results = result[JSONResponseKey.results.rawValue] as? [[String:Any]] else {
-                    completionHandlerForStudentLocation(nil, nil, ClientError.noResultReceived("Didn't receive a result from data conversion."))
-                    return
+                    let results = result[JSONResponseKey.results.rawValue] as? [[String:Any]] else {
+                        completionHandlerForStudentLocation(nil, nil, ClientError.noResultReceived.rawValue)
+                        return
                 }
                 
                 // Check if the results array has elements which means that there is at least one student location
@@ -94,23 +91,19 @@ class ParseClient {
                 // Create a student location from the last dictionary of the results array which holds all the locations for this student
                 // (if the student has multiple locations which actually shouldn't be the case) as the last dictionary is the newest location
                 guard let studentLocation = StudentLocation(fromDictionary: results[results.count - 1]),
-                let objectId = results[results.count - 1][JSONResponseKey.objectId.rawValue] as? String else {
-                    completionHandlerForStudentLocation(nil, nil, ClientError.parsingError("Couldn't create student location/object ID object from the provided dictionary: \(result)"))
-                    return
+                    let objectId = results[results.count - 1][JSONResponseKey.objectId.rawValue] as? String else {
+                        completionHandlerForStudentLocation(nil, nil, "Couldn't create student location/object ID object from the provided dictionary: \(result)")
+                        return
                 }
                 
                 // If the creation of the StudentLocation object succeeds pass it to the completion handler
                 completionHandlerForStudentLocation(studentLocation, objectId, nil)
                 
             }
-            
         }
-        
-        task.resume()
-        
     }
     
-    func getStudentLocations(limit: Int?, skip: Int?, orderBy: String?, completionHandlerForStudentLocations: @escaping (_ studentLocations: [StudentLocation]?, _ error: Error?) -> Void) {
+    func getStudentLocations(limit: Int?, skip: Int?, orderBy: String?, completionHandlerForStudentLocations: @escaping (_ studentLocations: [StudentLocation]?, _ errorMessage: String?) -> Void) {
         
         // Create an empty [String:Any] dictionary
         var parameters = [String:Any]()
@@ -137,52 +130,35 @@ class ParseClient {
             url = getParseUrl(withParameters: nil, andPathExtension: nil)
         }
         
-        // Create and configure the request
-        let request = NSMutableURLRequest(url: url)
-        request.httpMethod = "GET"
-        request.addValue(HTTPHeaderFieldValue.applicationId.rawValue, forHTTPHeaderField: HTTPHeaderFieldName.applicationId.rawValue)
-        request.addValue(HTTPHeaderFieldValue.restApiKey.rawValue, forHTTPHeaderField: HTTPHeaderFieldName.restApiKey.rawValue)
-        
-        // Make the request
-        let task = session.dataTask(with: request as URLRequest) { (data, response, error) in
-            
-            // Check if there was an error
-            guard error == nil else {
-                completionHandlerForStudentLocations(nil, error!)
+        sharedClient.taskForGET(withUrl: url, headerFields: parseHeaderFields) { (data, errorMessage) in
+            guard errorMessage == nil else {
+                completionHandlerForStudentLocations(nil, errorMessage!)
                 return
             }
             
-            // Check if the status code indicates a successful request
-            guard let statusCode = (response as? HTTPURLResponse)?.statusCode,
-                statusCode >= 200 && statusCode <= 299 else {
-                    completionHandlerForStudentLocations(nil, ClientError.unsuccessfulStatusCode("Received unsuccessful status code."))
-                    return
-            }
-            
-            // Check if there is data
             guard let data = data else {
-                completionHandlerForStudentLocations(nil, ClientError.noDataReturned("No data was returned."))
+                completionHandlerForStudentLocations(nil, ClientError.noDataReceived.rawValue)
                 return
             }
-
+            
             // Convert the data to a JSON object
-            Client.convertDataWithCompletionHandler(data: data) { (result, error) in
+            Client.convertDataWithCompletionHandler(data: data) { result, errorMessage in
                 
                 // Check if there was an error
-                guard error == nil else {
-                    completionHandlerForStudentLocations(nil, error!)
+                guard errorMessage == nil else {
+                    completionHandlerForStudentLocations(nil, errorMessage)
                     return
                 }
                 
                 // Check if the result can be casted to a dictionary
                 guard let result = result as? [String:Any] else {
-                    completionHandlerForStudentLocations(nil, ClientError.noResultReceived("Didn't receive result."))
+                    completionHandlerForStudentLocations(nil, ClientError.noResultReceived.rawValue)
                     return
                 }
                 
                 // Extract the results key that holds an array of dictionaries
                 guard let studentResults = result[JSONResponseKey.results.rawValue] as? [[String:Any]] else {
-                    completionHandlerForStudentLocations(nil, ClientError.keyNotFound("Couldn't find key \(JSONResponseKey.results.rawValue)"))
+                    completionHandlerForStudentLocations(nil, ClientError.keyNotFound.rawValue)
                     return
                 }
                 
@@ -191,7 +167,6 @@ class ParseClient {
                 for studentResult in studentResults {
                     // Fill the studentLocations array by creating StudentLocation objects from the dictionaries inside of studentResults
                     if let studentLocation = StudentLocation(fromDictionary: studentResult) {
-                        print(studentLocation)
                         studentLocations.append(studentLocation)
                     }
                 }
@@ -199,11 +174,7 @@ class ParseClient {
                 completionHandlerForStudentLocations(studentLocations, nil)
                 
             }
-            
         }
-        
-        task.resume()
-        
     }
     
     func post(studentLocation: StudentLocation, completionHandlerForPOST: @escaping (_ success: Bool) -> Void) {
