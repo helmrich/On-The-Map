@@ -34,6 +34,7 @@ extension ParseClient {
     
     enum ParameterValue: String {
         case uniqueKey = "{\"uniqueKey\":\"{uniqueKey}\"}"
+        case updatedAt, createdAt
     }
     
     enum ParameterPlaceholder: String {
