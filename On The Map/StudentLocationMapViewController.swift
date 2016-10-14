@@ -12,121 +12,45 @@ import MapKit
 class StudentLocationMapViewController: UIViewController {
 
     // MARK: - Properties
-    var studentLocations: [StudentLocation]? = nil
-    var studentPointAnnotations = [MKPointAnnotation]()
     
     
     // MARK: - Outlets and Actions
-    @IBOutlet weak var navigationBar: UINavigationBar!
-    @IBOutlet weak var logoutButton: UIBarButtonItem!
     @IBOutlet weak var studentLocationsMapView: MKMapView!
-    
-    @IBAction func reloadMapView() {
-        placeAnnotations()
-    }
-    
-    @IBAction func goToInformationPosting() {
-        
-        let informationPostingViewController = storyboard?.instantiateViewController(withIdentifier: "informationPostingVC") as! InformationPostingViewController
-        
-        guard let uniqueKey = UdacityClient.sharedInstance.accountKey else {
-            print("No unique key provided.")
-            return
-        }
-        
-        print(uniqueKey)
-        
-        ParseClient.sharedInstance.getStudentLocation(withUniqueKey: uniqueKey) { (studentLocation, _, error) in
-            guard error == nil else {
-                print(error!.localizedDescription)
-                return
-            }
-            
-            // Check if the searched student location is NOT empty...
-            guard studentLocation != nil else {
-                // if it is empty, present the information posting view controller
-                DispatchQueue.main.async {
-                    self.present(informationPostingViewController, animated: true, completion: nil)
-                }
-                return
-            }
-            
-            // if not, show an alert view that informs the user that there already is an existing student location with this account
-            // and ask whether the existing student location should be overwritten or the creation of a new location should be cancelled
-            
-            // Create the alert controller
-            let alertController = UIAlertController(title: nil, message: "You have already posted a Student Location. Would you like to overwrite your current Location?", preferredStyle: .alert)
-            
-            // Create and add the two actions to the alert controller (overwrite and cancel)
-            // When "Overwrite" is tapped the information posting view controller should be presented
-            let overwriteAction = UIAlertAction(title: "Overwrite", style: .default, handler: { (alertAction) in
-                informationPostingViewController.shouldUpdateStudentLocation = true
-                self.present(informationPostingViewController, animated: true, completion: nil)
-            })
-            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-            alertController.addAction(overwriteAction)
-            alertController.addAction(cancelAction)
-            
-            // Present the alert controller on the main thread
-            DispatchQueue.main.async {
-                self.present(alertController, animated: true, completion: nil)
-            }
-        }
-    }
     
     
     // MARK: - Lifecycle methods
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Set the navigation bar's title and the logoutButton UIBarButtonItem's font to Open Sans
-        navigationBar.titleTextAttributes = [
-            NSFontAttributeName: UIFont(name: "OpenSans", size: 17)!
-        ]
-        
-        logoutButton.setTitleTextAttributes([
-            NSFontAttributeName: UIFont(name: "OpenSans", size: 17)!
-            ], for: .normal)
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         // Set the region of the map that should be displayed in the beginning to the whole world
         studentLocationsMapView.region = MKCoordinateRegionForMapRect(MKMapRectWorld)
-        placeAnnotations()
+        
     }
     
     // MARK: - Functions
     
-    func placeAnnotations() {
-        ParseClient.sharedInstance.getStudentLocations(limit: 100, skip: 0, orderBy: nil) { (studentLocations, error) in
-            guard error == nil else {
-                print(error?.localizedDescription)
-                return
-            }
-            
-            guard let studentLocations = studentLocations else {
-                print("Couldn't get student locations.")
-                return
-            }
-            
-            self.studentLocations = studentLocations
-            
-            for studentLocation in studentLocations {
-                let studentPointAnnotation = MKPointAnnotation()
-                studentPointAnnotation.coordinate = CLLocationCoordinate2D(latitude: studentLocation.latitude, longitude: studentLocation.longitude)
-                studentPointAnnotation.title = "\(studentLocation.firstName) \(studentLocation.lastName)"
-                studentPointAnnotation.subtitle = studentLocation.mediaUrlString
-                self.studentPointAnnotations.append(studentPointAnnotation)
-            }
-            
-            DispatchQueue.main.async {
-                self.studentLocationsMapView.addAnnotations(self.studentPointAnnotations)
-            }
-            
+    func placeAnnotations(forStudentLocations studentLocations: [StudentLocation]) {
+        
+        // Instantiate an array of MKPointAnnotation objects and iterate over the array of student locations that
+        // was passed in as a parameter. Then create a point annotation for all the student locations and set the
+        // neccessary properties (coordinate, title = name, subtitle = URL) and append it to the created array
+        var studentPointAnnotations = [MKPointAnnotation]()
+        for studentLocation in studentLocations {
+            let studentPointAnnotation = MKPointAnnotation()
+            studentPointAnnotation.coordinate = CLLocationCoordinate2D(latitude: studentLocation.latitude, longitude: studentLocation.longitude)
+            studentPointAnnotation.title = "\(studentLocation.firstName) \(studentLocation.lastName)"
+            studentPointAnnotation.subtitle = studentLocation.mediaUrlString
+            studentPointAnnotations.append(studentPointAnnotation)
         }
+        
+        DispatchQueue.main.async {
+            // Remove all "old" student locations from the map view
+            self.studentLocationsMapView.removeAnnotations(self.studentLocationsMapView.annotations)
+            
+            // Add the current student locations to the map view
+            self.studentLocationsMapView.addAnnotations(studentPointAnnotations)
+        }
+        
     }
 
 }
@@ -162,25 +86,13 @@ extension StudentLocationMapViewController: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        // Unwrap the tapped annotation view's annotation and its subtitle which contains the URL string,
+        // then create a usable URL and open it in the default browser
         if let annotation = view.annotation,
         let subtitle = annotation.subtitle,
         let urlString = subtitle,
-        let url = URL(string: urlString) {
+        let url = ControllerHelper.createUrl(fromUrlString: urlString) {
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
