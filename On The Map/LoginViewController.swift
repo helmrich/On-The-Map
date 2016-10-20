@@ -67,6 +67,8 @@ class LoginViewController: UIViewController {
             ])
         
         loginButton.addCenteredActivityIndicator()
+        
+        addTapGestureRecognizerForHidingKeyboard()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -95,15 +97,18 @@ class LoginViewController: UIViewController {
     func login(username: String, password: String) {
         UdacityClient.sharedInstance.postSession(method: UdacityClient.Method.session.rawValue, userName: username, userPassword: password) { (sessionId, errorMessage) in
             
+            // Toggle the login button's loading status
             DispatchQueue.main.async {
                 self.loginButton.toggleLoadingStatus()
             }
             
+            // Check if there was an error
             guard errorMessage == nil else {
                 self.presentAlertController(withMessage: errorMessage!)
                 return
             }
             
+            // Check if a session ID could be retrieved
             guard let _ = sessionId else {
                 self.presentAlertController(withMessage: "Couldn't get session ID")
                 return
@@ -181,29 +186,38 @@ extension LoginViewController: FBSDKLoginButtonDelegate {
     }
     
     func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
+        
+        // Check if there was an error
         guard error == nil else {
             presentAlertController(withMessage: error.localizedDescription)
             return
         }
         
+        // Check if a result was received
         guard let result = result else {
             presentAlertController(withMessage: "Couldn't get result from facebook login.")
             return
         }
         
+        // Check if the result has a token
         guard result.token != nil else {
             presentAlertController(withMessage: "Facebook login failed. Try again.")
             return
         }
-        
+
+        // Assign the token to a constant...
         let accessToken = result.token.tokenString
         
+        // and pass it to the postSession method that takes the facebook access token instead of Udacity credentials
         UdacityClient.sharedInstance.postSession(method: UdacityClient.Method.session.rawValue, userName: "", userPassword: "", facebookAccessToken: accessToken) { (sessionId, errorMessage) in
+            
+            // Check if there was an error
             guard errorMessage == nil else {
                 self.presentAlertController(withMessage: errorMessage!)
                 return
             }
             
+            // Check if a session ID could be retrieved
             guard let _ = sessionId else {
                 self.presentAlertController(withMessage: "Couldn't get session ID.")
                 return
