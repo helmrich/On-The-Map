@@ -80,14 +80,6 @@ class ParseClient {
                     return
                 }
                 
-                for result in results {
-                    print("><><><><><><><><><><><><><><><><><><><><><><><><")
-                    print(result)
-                    print("><><><><><><><><><><><><><><><><><><><><><><><><")
-                }
-                
-                print(results.count)
-                
                 // Create a student location from the last dictionary of the results array which holds all the locations for this student
                 // (if the student has multiple locations which actually shouldn't be the case) as the last dictionary is the newest location
                 guard let studentLocation = StudentLocation(fromDictionary: results[results.count - 1]),
@@ -131,11 +123,14 @@ class ParseClient {
         }
         
         sharedClient.taskForGET(withUrl: url, headerFields: parseHeaderFields) { (data, errorMessage) in
+            
+            // Check if there was an error
             guard errorMessage == nil else {
                 completionHandlerForStudentLocations(nil, errorMessage!)
                 return
             }
             
+            // Check if data was received
             guard let data = data else {
                 completionHandlerForStudentLocations(nil, ClientError.noDataReceived.rawValue)
                 return
@@ -177,7 +172,7 @@ class ParseClient {
         }
     }
     
-    func post(studentLocation: StudentLocation, completionHandlerForPOST: @escaping (_ success: Bool) -> Void) {
+    func post(studentLocation: StudentLocation, completionHandlerForPOST: @escaping (_ success: Bool, _ errorMessage: String?) -> Void) {
         // Create and configure the request
         let request = NSMutableURLRequest(url: getParseUrl(withParameters: nil, andPathExtension: nil))
         request.httpMethod = "POST"
@@ -189,40 +184,45 @@ class ParseClient {
         
         // Make the request
         let task = session.dataTask(with: request as URLRequest) { (data, response, error) in
+            
+            // Check if there was an error
             guard error == nil else {
-                completionHandlerForPOST(false)
+                completionHandlerForPOST(false, error!.localizedDescription)
                 return
             }
             
+            // Check if the status code indicates a successful request
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode,
                 statusCode >= 200 && statusCode <= 299 else {
-                    completionHandlerForPOST(false)
+                    completionHandlerForPOST(false, ClientError.unsuccessfulStatusCode.rawValue)
                     return
             }
             
+            // Check if data was received
             guard let data = data else {
-                completionHandlerForPOST(false)
+                completionHandlerForPOST(false, ClientError.noDataReceived.rawValue)
                 return
             }
-            
-            Client.convertDataWithCompletionHandler(data: data) { (result, error) in
-                guard error == nil else {
-                    completionHandlerForPOST(false)
+
+            // Convert the data into a usable object
+            Client.convertDataWithCompletionHandler(data: data) { (result, errorMessage) in
+                guard errorMessage == nil else {
+                    completionHandlerForPOST(false, errorMessage!)
                     return
                 }
                 
                 guard let result = result as? [String:Any] else {
-                    completionHandlerForPOST(false)
+                    completionHandlerForPOST(false, ClientError.noResultReceived.rawValue)
                     return
                 }
                 
                 // Check if there is an objectId key in the result dictionary which means that it's the wanted result
                 guard let _ = result[JSONResponseKey.objectId.rawValue] as? String else {
-                    completionHandlerForPOST(false)
+                    completionHandlerForPOST(false, ClientError.keyNotFound.rawValue)
                     return
                 }
                 
-                completionHandlerForPOST(true)
+                completionHandlerForPOST(true, nil)
                 
             }
         
@@ -232,7 +232,7 @@ class ParseClient {
         
     }
     
-    func updateStudentLocation(withStudentLocation studentLocation: StudentLocation, forObjectId objectId: String, completionHandlerForUpdate: @escaping (_ success: Bool) -> Void) {
+    func updateStudentLocation(withStudentLocation studentLocation: StudentLocation, forObjectId objectId: String, completionHandlerForUpdate: @escaping (_ success: Bool, _ errorMessage: String?) -> Void) {
         // Create and configure the request
         let request = NSMutableURLRequest(url: getParseUrl(withParameters: nil, andPathExtension: "/\(objectId)"))
         request.httpMethod = "PUT"
@@ -246,38 +246,39 @@ class ParseClient {
         // Make the request
         let task = session.dataTask(with: request as URLRequest) { (data, response, error) in
             guard error == nil else {
-                completionHandlerForUpdate(false)
+                completionHandlerForUpdate(false, error!.localizedDescription)
                 return
             }
             
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode,
                 statusCode >= 200 && statusCode <= 299 else {
-                completionHandlerForUpdate(false)
+                completionHandlerForUpdate(false, ClientError.unsuccessfulStatusCode.rawValue)
                 return
             }
             
             guard let data = data else {
-                completionHandlerForUpdate(false)
+                completionHandlerForUpdate(false, ClientError.noDataReceived.rawValue)
                 return
             }
             
-            Client.convertDataWithCompletionHandler(data: data) { (result, error) in
-                guard error == nil else {
-                    completionHandlerForUpdate(false)
+            // Convert the data into a usable object
+            Client.convertDataWithCompletionHandler(data: data) { (result, errorMessage) in
+                guard errorMessage == nil else {
+                    completionHandlerForUpdate(false, errorMessage!)
                     return
                 }
                 
                 guard let result = result as? [String:Any] else {
-                    completionHandlerForUpdate(false)
+                    completionHandlerForUpdate(false, ClientError.noResultReceived.rawValue)
                     return
                 }
                 
                 guard let _ = result[JSONResponseKey.updatedAt.rawValue] else {
-                    completionHandlerForUpdate(false)
+                    completionHandlerForUpdate(false, ClientError.keyNotFound.rawValue)
                     return
                 }
                 
-                completionHandlerForUpdate(true)
+                completionHandlerForUpdate(true, nil)
                 
             }
             
@@ -290,6 +291,7 @@ class ParseClient {
     
     // MARK: - Helper functions
     
+    // This function takes an optional dictionary with parameters and an optional path extension and constructs a URL from it
     func getParseUrl(withParameters parameters: [String:Any]?, andPathExtension pathExtension: String?) -> URL {
         // Create a URLComponents object and set its properties
         var urlComponents = URLComponents()
