@@ -90,6 +90,7 @@
                                                         <connections>
                                                             <action selector="buttonTouchDown:" destination="qvt-vJ-VCM" eventType="touchDown" id="ntQ-YT-fFa"/>
                                                             <action selector="buttonTouchUp:" destination="qvt-vJ-VCM" eventType="touchUpInside" id="Abs-vu-UMN"/>
+                                                            <action selector="buttonTouchUp:" destination="qvt-vJ-VCM" eventType="touchUpOutside" id="d0N-iw-VnF"/>
                                                             <action selector="loginButtonTouchUp:" destination="qvt-vJ-VCM" eventType="touchUpInside" id="ENg-R5-h9i"/>
                                                         </connections>
                                                     </button>
@@ -410,6 +411,7 @@
                                         <connections>
                                             <action selector="buttonTouchDown:" destination="qZO-g6-XCB" eventType="touchDown" id="Wju-yA-fQq"/>
                                             <action selector="buttonTouchUp:" destination="qZO-g6-XCB" eventType="touchUpInside" id="RAS-a9-AOK"/>
+                                            <action selector="buttonTouchUp:" destination="qZO-g6-XCB" eventType="touchUpOutside" id="W0H-92-CKL"/>
                                             <action selector="findLocation:" destination="qZO-g6-XCB" eventType="touchUpInside" id="WKa-MM-z5s"/>
                                         </connections>
                                     </button>
@@ -433,6 +435,7 @@
                                 </state>
                                 <connections>
                                     <action selector="buttonTouchDown:" destination="qZO-g6-XCB" eventType="touchDown" id="o2i-Y0-kcm"/>
+                                    <action selector="buttonTouchUp:" destination="qZO-g6-XCB" eventType="touchUpOutside" id="PuG-Nu-p9W"/>
                                     <action selector="buttonTouchUp:" destination="qZO-g6-XCB" eventType="touchUpInside" id="SDn-cf-M5L"/>
                                     <action selector="submitEntry" destination="qZO-g6-XCB" eventType="touchUpInside" id="b63-bS-fNU"/>
                                 </connections>
