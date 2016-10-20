@@ -31,6 +31,7 @@ class Client {
             }
         }
         
+        // Make the request
         let task = session.dataTask(with: request as URLRequest) { (data, response, error) in
             
             // Check if there was an error
@@ -42,12 +43,13 @@ class Client {
             // Check if the status code indicates that the response was successful
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode,
                 statusCode >= 200 && statusCode <= 299 else {
-                    completionHandlerForGET(nil, "Unsuccessful response. Status code: \((response as? HTTPURLResponse)?.statusCode)")
+                    completionHandlerForGET(nil, ClientError.unsuccessfulStatusCode.rawValue)
                     return
             }
             
+            // Check if data was received
             guard let data = data else {
-                completionHandlerForGET(nil, "Didn't receive data.")
+                completionHandlerForGET(nil, ClientError.noDataReceived.rawValue)
                 return
             }
             
@@ -59,13 +61,14 @@ class Client {
         
     }
     
+    // This function takes raw data as a parameter and tries to deserialize it into a usable JSON object
     static func convertDataWithCompletionHandler(data: Data, completionHandler: (_ result: Any?, _ errorMessage: String?) -> Void) {
         
         var result: Any
         do {
             result = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
         } catch {
-            completionHandler(nil, "Couldn't deserialize data into a usable object.")
+            completionHandler(nil, ClientError.deserializationError.rawValue)
             return
         }
         
