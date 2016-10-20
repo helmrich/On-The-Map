@@ -109,7 +109,6 @@ class UdacityClient {
         if let facebookAccessToken = facebookAccessToken {
             // If there is a facebook access token send it with the JSON body,
             jsonBody = "{\"facebook_mobile\": {\"access_token\": \"\(facebookAccessToken)\"}}"
-            print(jsonBody)
         } else {
             // if not, use the provided Udacity credentials
             jsonBody = "{\"udacity\": {\"username\": \"\(userName)\", \"password\": \"\(userPassword)\"}}"
