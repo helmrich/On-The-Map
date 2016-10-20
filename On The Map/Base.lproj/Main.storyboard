@@ -132,29 +132,16 @@
                                     <constraint firstItem="fI0-VA-75d" firstAttribute="centerX" secondItem="FBV-44-ej0" secondAttribute="centerX" id="rnJ-kU-0Qz"/>
                                 </constraints>
                             </stackView>
-                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="j23-x2-pny" customClass="ErrorLabel" customModule="On_The_Map" customModuleProvider="target">
-                                <color key="backgroundColor" red="0.93725490570068359" green="0.32549020648002625" blue="0.31372550129890442" alpha="1" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="100" id="B7A-fH-WFA"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" name="OpenSans-Semibold" family="Open Sans" pointSize="20"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <color key="backgroundColor" red="0.0078431372549019607" green="0.70196078431372544" blue="0.89411764705882346" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="FBV-44-ej0" firstAttribute="leading" secondItem="NXf-KC-iui" secondAttribute="leadingMargin" id="Dk7-pZ-a7e"/>
-                            <constraint firstItem="j23-x2-pny" firstAttribute="leading" secondItem="NXf-KC-iui" secondAttribute="leading" id="Foe-Vm-0jw"/>
-                            <constraint firstItem="j23-x2-pny" firstAttribute="top" secondItem="NXf-KC-iui" secondAttribute="top" id="JNP-Ke-4zZ"/>
-                            <constraint firstAttribute="trailing" secondItem="j23-x2-pny" secondAttribute="trailing" id="cKf-r7-f4Q"/>
                             <constraint firstAttribute="trailingMargin" secondItem="FBV-44-ej0" secondAttribute="trailing" id="mXv-fv-yjW"/>
                             <constraint firstItem="FBV-44-ej0" firstAttribute="centerY" secondItem="NXf-KC-iui" secondAttribute="centerY" constant="-40" id="nwm-um-IWk"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="emailTextField" destination="x6W-je-zpl" id="EPk-RP-PKq"/>
-                        <outlet property="errorLabel" destination="j23-x2-pny" id="9Pw-Pu-7xG"/>
                         <outlet property="loginButton" destination="vwZ-CC-G8B" id="egq-3c-uKm"/>
                         <outlet property="passwordTextField" destination="FBv-PX-JFo" id="fIC-He-6xy"/>
                         <outlet property="udacityLogoImageView" destination="VFa-Az-6zn" id="rQC-FX-3c3"/>
@@ -521,7 +508,7 @@
         <scene sceneID="ksb-jH-rcI">
             <objects>
                 <navigationController storyboardIdentifier="studentLocationNavigationController" id="Z07-S2-pAk" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="TAB-aE-oEI">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="TAB-aE-oEI">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>

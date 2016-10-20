@@ -28,7 +28,6 @@
 		D242B3C71D9ABE9600094FA0 /* LoginTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D242B3C61D9ABE9600094FA0 /* LoginTextField.swift */; };
 		D242B3C91D9AC31700094FA0 /* OpenSans-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D242B3C81D9AC31700094FA0 /* OpenSans-Light.ttf */; };
 		D242B3CB1D9AC9DA00094FA0 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D242B3CA1D9AC9DA00094FA0 /* LoginViewController.swift */; };
-		D27C974A1D9C0FF700199B04 /* ErrorLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27C97491D9C0FF700199B04 /* ErrorLabel.swift */; };
 		D27C974C1D9D43E200199B04 /* UdacitySignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27C974B1D9D43E200199B04 /* UdacitySignUpViewController.swift */; };
 		D27C974F1D9E777900199B04 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D27C974E1D9E777900199B04 /* MapKit.framework */; };
 		D27C97511D9E7D1600199B04 /* StudentLocationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27C97501D9E7D1600199B04 /* StudentLocationTableViewController.swift */; };
@@ -66,7 +65,6 @@
 		D242B3C61D9ABE9600094FA0 /* LoginTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginTextField.swift; sourceTree = "<group>"; };
 		D242B3C81D9AC31700094FA0 /* OpenSans-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Light.ttf"; sourceTree = "<group>"; };
 		D242B3CA1D9AC9DA00094FA0 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
-		D27C97491D9C0FF700199B04 /* ErrorLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorLabel.swift; sourceTree = "<group>"; };
 		D27C974B1D9D43E200199B04 /* UdacitySignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UdacitySignUpViewController.swift; sourceTree = "<group>"; };
 		D27C974E1D9E777900199B04 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		D27C97501D9E7D1600199B04 /* StudentLocationTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StudentLocationTableViewController.swift; sourceTree = "<group>"; };
@@ -150,7 +148,6 @@
 			isa = PBXGroup;
 			children = (
 				D242B3C61D9ABE9600094FA0 /* LoginTextField.swift */,
-				D27C97491D9C0FF700199B04 /* ErrorLabel.swift */,
 				D22FB16C1D9EF58F00E977CC /* StudentLocationTableViewCell.swift */,
 				D22FB1741DA1D28800E977CC /* OnTheMapButton.swift */,
 				D206D4BC1DAC08D00093727F /* ViewControllerExtension.swift */,
@@ -320,7 +317,6 @@
 				D2A6714D1D971A5E0086B025 /* ParseClient.swift in Sources */,
 				D206D4B71DA84EA50093727F /* StudentLocationTabBarViewController.swift in Sources */,
 				D2CAF9E91DB1127A002C5C38 /* UdacityClientError.swift in Sources */,
-				D27C974A1D9C0FF700199B04 /* ErrorLabel.swift in Sources */,
 				D20D51311D956C2A0037A471 /* UdacityClient.swift in Sources */,
 				D2A6714F1D9726B30086B025 /* StudentLocation.swift in Sources */,
 				D2CAF9EB1DB18324002C5C38 /* DataSourceError.swift in Sources */,

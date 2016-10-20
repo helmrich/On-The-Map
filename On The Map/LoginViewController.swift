@@ -19,7 +19,6 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var passwordTextField: LoginTextField!
     @IBOutlet weak var loginButton: OnTheMapButton!
     @IBOutlet weak var facebookButton: OnTheMapButton!
-    @IBOutlet weak var errorLabel: UILabel!
     @IBOutlet weak var udacityLogoImageView: UIImageView!
     
     @IBAction func buttonTouchDown(_ sender: OnTheMapButton) {
@@ -31,7 +30,6 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func loginButtonTouchUp(_ sender: AnyObject) {
-        errorLabel.isHidden = true
         // Check if a username and password were provided ...
         if let username = emailTextField.text,
             let password = passwordTextField.text {
@@ -41,7 +39,6 @@ class LoginViewController: UIViewController {
                 loginButton.toggleLoadingStatus()
             } else {
                 // if not, display an error
-                showError(message: "Please provide a username and password.")
                 presentAlertController(withMessage: "No username and/or password provided")
             }
         }
@@ -104,12 +101,11 @@ class LoginViewController: UIViewController {
             
             guard errorMessage == nil else {
                 self.presentAlertController(withMessage: errorMessage!)
-                self.showError(message: errorMessage!)
                 return
             }
             
             guard let _ = sessionId else {
-                self.showError(message: "Couldn't get session ID.")
+                self.presentAlertController(withMessage: "Couldn't get session ID")
                 return
             }
             
@@ -120,13 +116,6 @@ class LoginViewController: UIViewController {
                 self.present(studentLocationTabBarController, animated: true, completion: nil)
             }
             
-        }
-    }
-    
-    func showError(message: String) {
-        DispatchQueue.main.async {
-            self.errorLabel.text = message
-            self.errorLabel.isHidden = false
         }
     }
     
