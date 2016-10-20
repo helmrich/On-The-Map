@@ -215,9 +215,8 @@ class InformationPostingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Add a gesture recognizer for taps and add it to the view controller's main view
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
-        view.addGestureRecognizer(tapGesture)
+        // Add a gesture recognizer for taps that will hide the keyboard
+        addTapGestureRecognizerForHidingKeyboard()
         
         submitButton.addCenteredActivityIndicator()
         findButton.addCenteredActivityIndicator()
@@ -287,27 +286,6 @@ class InformationPostingViewController: UIViewController {
         
     }
     
-    // This function will be called when there is a tap gesture on the InformationPostingViewController's main view
-    func hideKeyboard() {
-        // It then checks if a text view is the first responder and if it is...
-        if locationTextView.isFirstResponder {
-            // It checks if the text view is empty
-            if locationTextView.text == "" {
-                // and sets it back to the default value if that's the case
-                locationTextView.text = "Enter Your Location Here"
-            }
-            // and it resigns its first responder status
-            locationTextView.resignFirstResponder()
-        }
-        
-        if linkTextView.isFirstResponder {
-            if linkTextView.text == "" {
-                linkTextView.text = "Enter a Link to Share Here"
-            }
-            linkTextView.resignFirstResponder()
-        }
-    }
-    
     // This function toggles the interface between the UI for finding a location and the UI for submitting the location with a link
     // by setting the views' properties accordingly
     func setSubmitView(toShow shouldShow: Bool) {
@@ -356,6 +334,20 @@ extension InformationPostingViewController: UITextViewDelegate {
         }
     }
     
+    // When the editing of a text view ends...
+    func textViewDidEndEditing(_ textView: UITextView) {
+        // check, which tag the edited text view has and if its text is empty,
+        // if it is, set the text to its "default" value
+        
+        if (textView.tag == 1 && textView.text == "") {
+            textView.text = "Enter Your Location Here"
+        }
+        
+        if (textView.tag == 2 && textView.text == "") {
+            textView.text = "Enter a Link to Share Here"
+        }
+    }
+    
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         // When text in the text view is changed check if it has a
         // value of "\n" that is a line break which means
@@ -375,7 +367,6 @@ extension InformationPostingViewController: UITextViewDelegate {
 
 extension InformationPostingViewController {
     func keyboardWillShow(notification: Notification) {
-        print(submitButton.frame.origin)
         // Check if the keyboard is currently displayed or not, if not the view should be moved
         // up and the isKeyboardActive variable should be set to true, if it's already displayed
         // nothing should happen as the view was already moved up before

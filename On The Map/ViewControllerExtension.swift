@@ -18,4 +18,15 @@ extension UIViewController {
         }
     }
     
+    func addTapGestureRecognizerForHidingKeyboard() {
+        // Add a gesture recognizer for taps and add it to the view controller's main view
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    func hideKeyboard() {
+        // Resign the view (or any of its text field/text view's) first responder status so that the keyboard will hide
+        view.endEditing(true)
+    }
+    
 }
