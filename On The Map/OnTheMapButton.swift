@@ -63,8 +63,7 @@ class OnTheMapButton: UIButton {
     }
     
     // This method adds an activity indicator view to the center of the button
-    func addCenteredActivityIndicator(activityIndicatorView: UIActivityIndicatorView = UIActivityIndicatorView()) {
-        
+    func addCenteredActivityIndicator(activityIndicatorView: UIActivityIndicatorView = UIActivityIndicatorView(activityIndicatorStyle: .gray)) {
         // Add the activity indicator view to the button as a subview
         addSubview(activityIndicatorView)
         
