@@ -38,6 +38,7 @@
 		D2A671531D986D9B0086B025 /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A671521D986D9B0086B025 /* Client.swift */; };
 		D2A671551D9870FD0086B025 /* ClientError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A671541D9870FD0086B025 /* ClientError.swift */; };
 		D2CAF9E91DB1127A002C5C38 /* UdacityClientError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CAF9E81DB1127A002C5C38 /* UdacityClientError.swift */; };
+		D2CAF9EB1DB18324002C5C38 /* DataSourceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CAF9EA1DB18324002C5C38 /* DataSourceError.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -76,6 +77,7 @@
 		D2A671541D9870FD0086B025 /* ClientError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientError.swift; sourceTree = "<group>"; };
 		D2CAF9E41DAFC441002C5C38 /* On The Map.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "On The Map.entitlements"; sourceTree = "<group>"; };
 		D2CAF9E81DB1127A002C5C38 /* UdacityClientError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UdacityClientError.swift; sourceTree = "<group>"; };
+		D2CAF9EA1DB18324002C5C38 /* DataSourceError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSourceError.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,7 +138,9 @@
 		D20D51281D95558D0037A471 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				D2A6714E1D9726B30086B025 /* StudentLocation.swift */,
 				D206D4B81DA9AFAE0093727F /* StudentLocationDataSource.swift */,
+				D2CAF9EA1DB18324002C5C38 /* DataSourceError.swift */,
 				D20D512C1D9569690037A471 /* Clients */,
 			);
 			name = Model;
@@ -204,7 +208,6 @@
 			children = (
 				D2A6714C1D971A5E0086B025 /* ParseClient.swift */,
 				D2A6714A1D971A500086B025 /* ParseConstants.swift */,
-				D2A6714E1D9726B30086B025 /* StudentLocation.swift */,
 			);
 			name = Parse;
 			sourceTree = "<group>";
@@ -320,6 +323,7 @@
 				D27C974A1D9C0FF700199B04 /* ErrorLabel.swift in Sources */,
 				D20D51311D956C2A0037A471 /* UdacityClient.swift in Sources */,
 				D2A6714F1D9726B30086B025 /* StudentLocation.swift in Sources */,
+				D2CAF9EB1DB18324002C5C38 /* DataSourceError.swift in Sources */,
 				D206D4B91DA9AFAE0093727F /* StudentLocationDataSource.swift in Sources */,
 				D20D51161D9555320037A471 /* AppDelegate.swift in Sources */,
 				D2A6714B1D971A500086B025 /* ParseConstants.swift in Sources */,
