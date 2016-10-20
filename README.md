@@ -19,3 +19,21 @@ project folder. Actually the frameworks should lay on the locale machine and the
 
 However because this project will be submitted to a Udacity reviewer it should work "out of the box" with a setup process for
 the reviewer and that's why I decided to put the frameworks directly in the project.
+
+## Screenshots
+### Login Screen
+![Login Screen](https://github.com/helmrich/On-The-Map/blob/master/otm-login-screen.png "Login Screen")
+
+### Map View
+![Map View](https://github.com/helmrich/On-The-Map/blob/master/otm-map-view.png "Map View")
+
+### Table View
+![Table View](https://github.com/helmrich/On-The-Map/blob/master/otm-table-view.png "Table View")
+
+### Posting a Location - Finding a location
+![Posting a Location - Find location](https://github.com/helmrich/On-The-Map/blob/master/otm-information-posting-1.png "Posting a Location - Find location")
+
+### Adding a Link to the Location
+![Adding a Link to the Location](https://github.com/helmrich/On-The-Map/blob/master/otm-information-posting-2.png "Adding a link to the location")
+
+
