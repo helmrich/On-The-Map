@@ -13,6 +13,7 @@ class LoginViewController: UIViewController {
     // MARK: - Properties
     var isKeyboardActive = false
     
+    
     // MARK: - Outlets and Actions
     @IBOutlet weak var emailTextField: LoginTextField!
     @IBOutlet weak var passwordTextField: LoginTextField!
@@ -37,11 +38,11 @@ class LoginViewController: UIViewController {
             if username.characters.count > 0 && password.characters.count > 0 {
                 // if so, try to log in with the provided values
                 login(username: username, password: password)
-                loginButton.addCenteredActivityIndicator()
                 loginButton.toggleLoadingStatus()
             } else {
                 // if not, display an error
                 showError(message: "Please provide a username and password.")
+                presentAlertController(withMessage: "No username and/or password provided")
             }
         }
     }
@@ -67,6 +68,8 @@ class LoginViewController: UIViewController {
             NSLayoutConstraint(item: facebookLoginButton, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1, constant: -20),
             NSLayoutConstraint(item: facebookLoginButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 50)
             ])
+        
+        loginButton.addCenteredActivityIndicator()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -87,37 +90,6 @@ class LoginViewController: UIViewController {
         // Remove observers for keyboard notifications
         NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillShow, object: nil)
         NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillHide, object: nil)
-    }
-    
-    
-    // MARK: - Functions for notifications
-    
-    func keyboardWillShow(notification: Notification) {
-        // Check if the keyboard is currently displayed or not, if not the view should be moved
-        // up and the isKeyboardActive variable should be set to true, if it's already displayed 
-        // nothing should happen as the view was already moved up before
-        if !isKeyboardActive {
-            // Get the userInfo dictionary that gets sent with the notification and get the key which contains the keyboard's height
-            if let userInfo = notification.userInfo,
-                let keyboardFrameEnd = userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue {
-                // The view is moved up by half of the height of the keyboard because it's not neccessary to display
-                // the facebook login button on the bottom when typing in the Udacity user information as the user obviously 
-                // wants to log in via Udacity
-                view.frame.origin.y -= keyboardFrameEnd.cgRectValue.height / 2
-            }
-            // Make the udacity logo transparent
-            udacityLogoImageView.alpha = 0.2
-            isKeyboardActive = true
-        }
-    }
-    
-    func keyboardWillHide(notification: Notification) {
-        // The view frame's origin y value can simply be set to 0 as it's the bottom of the screen
-        view.frame.origin.y = 0
-        // Make the udacity logo intransparent
-        udacityLogoImageView.alpha = 1
-        // When the keyboard will hide the isKeyboardActive variable should be reset to false
-        isKeyboardActive = false
     }
     
     
@@ -167,7 +139,9 @@ class LoginViewController: UIViewController {
     
 }
 
+
 // MARK: - Text Field delegate methods
+
 extension LoginViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // When the return button is pressed on the keyboard the text field should resign its first responder status
@@ -177,7 +151,42 @@ extension LoginViewController: UITextFieldDelegate {
     }
 }
 
+
+// MARK: - Functions for notifications
+
+extension LoginViewController {
+    func keyboardWillShow(notification: Notification) {
+        // Check if the keyboard is currently displayed or not, if not the view should be moved
+        // up and the isKeyboardActive variable should be set to true, if it's already displayed
+        // nothing should happen as the view was already moved up before
+        if !isKeyboardActive {
+            // Get the userInfo dictionary that gets sent with the notification and get the key which contains the keyboard's height
+            if let userInfo = notification.userInfo,
+                let keyboardFrameEnd = userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue {
+                // The view is moved up by half of the height of the keyboard because it's not neccessary to display
+                // the facebook login button on the bottom when typing in the Udacity user information as the user obviously
+                // wants to log in via Udacity
+                view.frame.origin.y -= keyboardFrameEnd.cgRectValue.height / 2
+            }
+            // Make the udacity logo transparent
+            udacityLogoImageView.alpha = 0.2
+            isKeyboardActive = true
+        }
+    }
+    
+    func keyboardWillHide(notification: Notification) {
+        // The view frame's origin y value can simply be set to 0 as it's the bottom of the screen
+        view.frame.origin.y = 0
+        // Make the udacity logo intransparent
+        udacityLogoImageView.alpha = 1
+        // When the keyboard will hide the isKeyboardActive variable should be reset to false
+        isKeyboardActive = false
+    }
+}
+
+
 // MARK: - Facebook SDK login button delegate
+
 extension LoginViewController: FBSDKLoginButtonDelegate {
     func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!) {
     }
@@ -221,11 +230,3 @@ extension LoginViewController: FBSDKLoginButtonDelegate {
         
     }
 }
-
-
-
-
-
-
-
-
