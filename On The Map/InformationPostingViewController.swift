@@ -12,13 +12,16 @@ import MapKit
 class InformationPostingViewController: UIViewController {
 
     // MARK: - Properties
+    var isKeyboardActive = false
     var coordinate: CLLocationCoordinate2D? = nil
     
     // This variable checks if the student location should be updated (which means that it already exists),
     // if its value is false it should post a new student location
     var shouldUpdateStudentLocation: Bool = false
     
+    
     // MARK: - Outlets and Actions
+    
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var locationTextView: UITextView!
     @IBOutlet weak var linkTextView: UITextView!
@@ -45,7 +48,6 @@ class InformationPostingViewController: UIViewController {
     @IBAction func findLocation(_ sender: AnyObject) {
         
         setSubmitView(toShow: true)
-        findButton.addCenteredActivityIndicator()
         findButton.toggleLoadingStatus()
         
         
@@ -95,8 +97,12 @@ class InformationPostingViewController: UIViewController {
     
     @IBAction func submitEntry() {
         
-        // Check if the link text's value is the default value and display an alert if it's the case
-        guard linkTextView.text != "Enter a Link to Share Here" else {
+        // When the submit button is pressed the linkTextView should resign its
+        // first responder status
+        linkTextView.resignFirstResponder()
+        
+        // Check if the link text's value is the default value or if there is no text and display an alert if either one is true
+        guard linkTextView.text != "Enter a Link to Share Here" && linkTextView.text.characters.count > 0 else {
             presentAlertController(withMessage: "Please provide a link.")
             return
         }
@@ -108,7 +114,6 @@ class InformationPostingViewController: UIViewController {
             return
         }
         
-        self.submitButton.addCenteredActivityIndicator()
         self.submitButton.toggleLoadingStatus()
         
         // Get the public user data
@@ -152,8 +157,6 @@ class InformationPostingViewController: UIViewController {
                 // Get the student location that should be updated
                 ParseClient.sharedInstance.getStudentLocation(withUniqueKey: uniqueKey) { (_, objectId, error) in
                     
-                    print(objectId)
-                    
                     // Check if there was an error
                     guard error == nil else {
                         self.presentAlertController(withMessage: "Couldn't update location. Try again.")
@@ -167,10 +170,17 @@ class InformationPostingViewController: UIViewController {
                     }
                     
                     // Update the student location with the given object ID and check whether the updating was successful or not
-                    ParseClient.sharedInstance.updateStudentLocation(withStudentLocation: studentLocation, forObjectId: objectId) { success in
+                    ParseClient.sharedInstance.updateStudentLocation(withStudentLocation: studentLocation, forObjectId: objectId) { (success, errorMessage) in
+                        
+                        guard errorMessage == nil else {
+                            self.presentAlertController(withMessage: errorMessage!)
+                            return
+                        }
+                        
                         if success {
-                            print("Updated location successfully.")
-                            self.dismiss(animated: true, completion: nil)
+                            DispatchQueue.main.async {
+                                self.dismiss(animated: true, completion: nil)
+                            }
                         } else {
                             self.presentAlertController(withMessage: "Couldn't update location. Try again.")
                         }
@@ -179,12 +189,18 @@ class InformationPostingViewController: UIViewController {
             } else {
                 // If the student location shouldn't be updated:
                 // Post the student location
-                ParseClient.sharedInstance.post(studentLocation: studentLocation) { success in
+                ParseClient.sharedInstance.post(studentLocation: studentLocation) { (success, errorMessage) in
+                    
+                    guard errorMessage == nil else {
+                        self.presentAlertController(withMessage: errorMessage!)
+                        return
+                    }
+                    
                     if success {
-                        print("Posted entry successfully.")
                         self.dismiss(animated: true, completion: nil)
                         return
                     }
+                    
                     self.presentAlertController(withMessage: "Couldn't post location. Try again.")
 
                 }
@@ -193,44 +209,107 @@ class InformationPostingViewController: UIViewController {
         
     }
     
+    
     // MARK: - Lifecycle methods
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Add a gesture recognizer for taps and add it to the view controller's main view
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
+        view.addGestureRecognizer(tapGesture)
+        
+        submitButton.addCenteredActivityIndicator()
+        findButton.addCenteredActivityIndicator()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Add observers for keyboard notifications
+        NotificationCenter.default.addObserver(forName: .UIKeyboardWillShow, object: nil, queue: nil, using: keyboardWillShow)
+        NotificationCenter.default.addObserver(forName: .UIKeyboardWillHide, object: nil, queue: nil, using: keyboardWillHide)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        // Remove observers for keyboard notifications
+        NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillHide, object: nil)
+    }
     
     
     // MARK: - Functions
     
-    func getLocation(fromString string: String, completionHandlerForLocation: @escaping (_ coordinate: CLLocationCoordinate2D?, _ region: CLCircularRegion?, _ error: String?) -> Void) {
+    // This function takes an address string and forward geocodes the string to a coordinate. Besides the coordinate and a possible error
+    // message the completion handler has a region parameter which can be used to set the visible region
+    func getLocation(fromString string: String, completionHandlerForLocation: @escaping (_ coordinate: CLLocationCoordinate2D?, _ region: CLCircularRegion?, _ errorMessage: String?) -> Void) {
         
+        // Create an instance of CLGeocoder
         let geocoder = CLGeocoder()
         
+        // Forward geocode the address string with the appropriate geocoder's method
         geocoder.geocodeAddressString(string) { (placemark, error) in
+            
+            // Check if there was an error
             guard error == nil else {
                 completionHandlerForLocation(nil, nil, error!.localizedDescription)
                 return
             }
             
+            // Check if a placemark could be created
             guard let placemark = placemark else {
                 completionHandlerForLocation(nil, nil, "Couldn't get placemark.")
                 return
             }
             
+            // Check if there is a region value and if it can be casted as a CLCircularRegion object
+            // Note: If there are multiple placemarks the first result of the returned placemarks will be used in this case
+            // as it's the most common placemark. If it's not the placemark the user was looking for there is still the possibility
+            // to input a more precise description of the location's name
             guard let region = placemark[0].region as? CLCircularRegion else {
                 completionHandlerForLocation(nil, nil, "Couldn't get region.")
                 return
             }
             
+            // Check if there is a value for the location
             guard let location = placemark[0].location else {
                 completionHandlerForLocation(nil, nil, "Couldn't get location.")
                 return
             }
-            
+
+            // Get the coordinate and pass it and the region to the completion handler
             let coordinate = location.coordinate
-            
             completionHandlerForLocation(coordinate, region, nil)
             
         }
         
     }
     
+    // This function will be called when there is a tap gesture on the InformationPostingViewController's main view
+    func hideKeyboard() {
+        // It then checks if a text view is the first responder and if it is...
+        if locationTextView.isFirstResponder {
+            // It checks if the text view is empty
+            if locationTextView.text == "" {
+                // and sets it back to the default value if that's the case
+                locationTextView.text = "Enter Your Location Here"
+            }
+            // and it resigns its first responder status
+            locationTextView.resignFirstResponder()
+        }
+        
+        if linkTextView.isFirstResponder {
+            if linkTextView.text == "" {
+                linkTextView.text = "Enter a Link to Share Here"
+            }
+            linkTextView.resignFirstResponder()
+        }
+    }
+    
+    // This function toggles the interface between the UI for finding a location and the UI for submitting the location with a link
+    // by setting the views' properties accordingly
     func setSubmitView(toShow shouldShow: Bool) {
         if shouldShow {
             UIView.animate(withDuration: 0.5) {
@@ -265,6 +344,9 @@ class InformationPostingViewController: UIViewController {
 
 }
 
+
+// MARK: - Text View delegate
+
 extension InformationPostingViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         // If a text view's text is the default value the text view should become
@@ -288,5 +370,32 @@ extension InformationPostingViewController: UITextViewDelegate {
         
         return true
         
+    }
+}
+
+extension InformationPostingViewController {
+    func keyboardWillShow(notification: Notification) {
+        print(submitButton.frame.origin)
+        // Check if the keyboard is currently displayed or not, if not the view should be moved
+        // up and the isKeyboardActive variable should be set to true, if it's already displayed
+        // nothing should happen as the view was already moved up before
+        if !isKeyboardActive {
+            // Get the userInfo dictionary that gets sent with the notification and get the key which contains the keyboard's height
+            if let userInfo = notification.userInfo,
+                let keyboardFrameEnd = userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue {
+                submitButton.frame.origin.y -= keyboardFrameEnd.cgRectValue.height
+            }
+            isKeyboardActive = true
+        }
+    }
+    
+    func keyboardWillHide(notification: Notification) {
+        // The view frame's origin y value can simply be set to 0 as it's the bottom of the screen
+        if let userInfo = notification.userInfo,
+            let keyboardFrameEnd = userInfo[UIKeyboardFrameEndUserInfoKey] as? NSValue {
+            submitButton.frame.origin.y += keyboardFrameEnd.cgRectValue.height
+        }
+        // When the keyboard will hide the isKeyboardActive variable should be reset to false
+        isKeyboardActive = false
     }
 }
