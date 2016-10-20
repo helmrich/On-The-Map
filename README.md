@@ -17,8 +17,7 @@ the pin symbol in the navigation bar.
 Unfortunately this repo is quite large (almost 15 MB). This is mainly due to the large size of the facebook frameworks that lay in the
 project folder. Actually the frameworks should lay on the locale machine and the framework search path should be set accordingly.
 
-However because this project will be submitted to a Udacity reviewer it should work "out of the box" with a setup process for
-the reviewer and that's why I decided to put the frameworks directly in the project.
+However because this project will be submitted to a Udacity reviewer it should work "out of the box" without a setup process for the reviewer and that's why I decided to lay the frameworks directly into the project.
 
 ## Screenshots
 ### Login Screen
