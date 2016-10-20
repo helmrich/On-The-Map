@@ -11,9 +11,6 @@ import MapKit
 
 class StudentLocationMapViewController: UIViewController {
 
-    // MARK: - Properties
-    
-    
     // MARK: - Outlets and Actions
     @IBOutlet weak var studentLocationsMapView: MKMapView!
     
@@ -26,6 +23,7 @@ class StudentLocationMapViewController: UIViewController {
         studentLocationsMapView.region = MKCoordinateRegionForMapRect(MKMapRectWorld)
         
     }
+    
     
     // MARK: - Functions
     

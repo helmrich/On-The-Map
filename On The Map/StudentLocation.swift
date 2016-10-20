@@ -9,6 +9,9 @@
 import Foundation
 
 struct StudentLocation {
+    
+    // MARK: - Properties
+    
     let firstName: String
     let lastName: String
     let mapString: String
@@ -17,6 +20,9 @@ struct StudentLocation {
     let longitude: Double
     let uniqueKey: String
     var objectId: String?
+    
+    
+    // MARK: - Initializers
     
     init(firstName: String, lastName: String, mapString: String, mediaUrlString: String, latitude: Double, longitude: Double, uniqueKey: String) {
         self.firstName = firstName

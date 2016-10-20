@@ -10,9 +10,6 @@ import UIKit
 
 class StudentLocationTableViewController: UIViewController {
 
-    // MARK: - Properties
-    
-    
     // MARK: - Outlets and Actions
     
     @IBOutlet weak var studentLocationTableView: UITableView!

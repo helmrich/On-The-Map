@@ -42,13 +42,16 @@ class UdacityClient {
         let url = udacityUrl(withMethod: methodWithAccountKey)
         
         sharedClient.taskForGET(withUrl: url, headerFields: nil) { (data, errorMessage) in
+            
+            // Check if there was an error
             guard errorMessage == nil else {
-                completionHandlerForPublicUserData(nil, errorMessage)
+                completionHandlerForPublicUserData(nil, errorMessage!)
                 return
             }
             
+            // Check if data was received
             guard let data = data else {
-                completionHandlerForPublicUserData(nil, "Didn't receive data.")
+                completionHandlerForPublicUserData(nil, ClientError.noDataReceived.rawValue)
                 return
             }
             
@@ -65,7 +68,7 @@ class UdacityClient {
                 
                 // Check if the result can be turned into a usable object
                 guard let result = result as? [String:Any] else {
-                    completionHandlerForPublicUserData(nil, "Couldn't turn deserialized JSON into a usable object!")
+                    completionHandlerForPublicUserData(nil, ClientError.deserializationError.rawValue)
                     return
                 }
                 
@@ -73,7 +76,7 @@ class UdacityClient {
                 guard let user = result[JSONResponseKey.user.rawValue] as? [String:Any],
                     let firstName = user[JSONResponseKey.firstName.rawValue] as? String,
                     let lastName = user[JSONResponseKey.lastName.rawValue] as? String else {
-                        completionHandlerForPublicUserData(nil, "Key \(JSONResponseKey.user.rawValue), \(JSONResponseKey.firstName.rawValue) and/or \(JSONResponseKey.lastName.rawValue) not found.")
+                        completionHandlerForPublicUserData(nil, ClientError.keyNotFound.rawValue)
                         return
                 }
                 
@@ -285,11 +288,3 @@ class UdacityClient {
     }
     
 }
-
-
-
-
-
-
-
-

@@ -12,6 +12,8 @@ class StudentLocationDataSource {
     
     // MARK: - Properties
     var studentLocations: [StudentLocation]?
+    
+    // sharedInstance singleton
     static let sharedInstance = StudentLocationDataSource()
     
     fileprivate init() {}
