@@ -30,32 +30,31 @@ class StudentLocationTabBarViewController: UITabBarController {
             
             // Check if the logout was successful
             if success {
-                // If the deletion was successful dismiss the tab bar controller (with its view controllers)
+                // If the deletion was successful dismiss the tab bar controller (with its view controllers),
                 DispatchQueue.main.async {
                     self.dismiss(animated: true, completion: nil)
                 }
             } else {
+                // if not, present an alert controller with an appropriate message
                 self.presentAlertController(withMessage: "Logout failed")
             }
         }
     }
     
     @IBAction func reload() {
-        // TODO: Reload Table View/Map View
-        
         setupViewControllers()
     }
     
     @IBAction func goToInformationPosting() {
+        
+        // Instantiate the information posting view controller from storyboard
         let informationPostingViewController = storyboard?.instantiateViewController(withIdentifier: "informationPostingVC") as! InformationPostingViewController
         
         // Check if there is an account/unique key
         guard let uniqueKey = UdacityClient.sharedInstance.accountKey else {
-            print("No unique key provided.")
+            presentAlertController(withMessage: "Couldn't get unique account key")
             return
         }
-        
-        print("Unique key: \(uniqueKey)")
         
         ParseClient.sharedInstance.getStudentLocation(withUniqueKey: uniqueKey) { (studentLocation, _, errorMessage) in
             guard errorMessage == nil else {
@@ -113,9 +112,7 @@ class StudentLocationTabBarViewController: UITabBarController {
         super.viewWillAppear(animated)
         
         setupViewControllers()
-        if postSuccessful {
-            presentAlertController(withMessage: "Successful!")
-        }
+        
     }
     
     
@@ -123,21 +120,26 @@ class StudentLocationTabBarViewController: UITabBarController {
     func setupViewControllers() {
         StudentLocationDataSource.sharedInstance.getStudentLocationsForDataSource(limit: 100, skip: 0, orderBy: "-\(ParseClient.ParameterValue.updatedAt.rawValue)") { (success, errorMessage) in
             
+            // Check if there was an error
             guard errorMessage == nil else {
                 self.presentAlertController(withMessage: "\(errorMessage!) Try to refresh.")
                 return
             }
             
+            // Check if the request was successful
             guard success else {
-                print("Couldn't get student locations.")
+                self.presentAlertController(withMessage: DataSourceError.studentLocationsRequestFailed.rawValue)
                 return
             }
             
+            // Check if there are student locations in the data source
             guard let studentLocations = StudentLocationDataSource.sharedInstance.studentLocations else {
-                print("No student locations found.")
+                self.presentAlertController(withMessage: DataSourceError.noStudentLocations.rawValue)
                 return
             }
             
+            // Check which view controller is selected in the tab bar, then cast the view controller to the
+            // appropriate class and call the method that is used to setup the view with student locations
             if let mapViewController = self.selectedViewController as? StudentLocationMapViewController {
                 mapViewController.placeAnnotations(forStudentLocations: studentLocations)
             }
