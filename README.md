@@ -1,5 +1,5 @@
 # On The Map
-The third major application of the Udacity iOS Developer Nanodegree. This app enables Udacity students to share their
+On The Map is the third major application of the Udacity iOS Developer Nanodegree. This app enables Udacity students to share their
 current location alongside an interesting link. The main focus of developing this app lays on Networking in iOS.
 
 ## Description
