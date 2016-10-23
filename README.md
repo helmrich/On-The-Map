@@ -5,7 +5,7 @@ current location alongside an interesting link. The main focus of developing thi
 ## Description
 On The Map is an app that lets Udacity students share their current location with an interesting link which can be anything
 from an interesting article they've read to their LinkedIn profile. In the beginning the user can login with either Udacity
-credentials or via facebook. 
+credentials or via Facebook. 
 
 The user can then watch all the previously posted student locations either in a map view or a table view and tap on a student
 to be directed to the associated link.
@@ -13,11 +13,13 @@ to be directed to the associated link.
 From the map or the table view it's also possible for the student to add a new location or update an existing one by tapping on
 the pin symbol in the navigation bar.
 
-## About facebook login
-Unfortunately this repo is quite large (almost 15 MB, unzipped almost 32 MB). This is mainly due to the large size of the facebook frameworks that lay in the
-project folder. Actually the frameworks should lay on the locale machine and the framework search path should be set accordingly.
+## About Facebook login
+In order to use Facebook login you have to follow these steps:
 
-However because this project will be submitted to a Udacity reviewer it should work "out of the box" without a setup process for the reviewer and that's why I decided to lay the frameworks directly into the project.
+1. Download the [Facebook SDK](https://developers.facebook.com/docs/ios/getting-started/)
+2. Unzip it and put the files `Bolts.framework`, `FBSDKCoreKit.framework` and `FBSDKLoginKit.framework` into ~/Documents/FacebookSDK
+3. Add ~/Documents/FacebookSDK to the project's Framework Search Paths
+4. Drag the files `Bolts.framework`, `FBSDKCoreKit.framework` and `FBSDKLoginKit.framework` in the Frameworks folder or to *Linked Frameworks and Libraries* in the general Target settings, check **Create groups for any added folders** and uncheck **Copy items into destination group's folder**. 
 
 ## Screenshots
 ### Login Screen
