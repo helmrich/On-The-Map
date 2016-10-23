@@ -1,5 +1,5 @@
 # On The Map
-The third major application of the Udacity iOS Developer Nanodegree. This app enables Udacity students to share their
+On The Map is the third major application of the Udacity iOS Developer Nanodegree. This app enables Udacity students to share their
 current location alongside an interesting link. The main focus of developing this app lays on Networking in iOS.
 
 ## Description
@@ -14,7 +14,7 @@ From the map or the table view it's also possible for the student to add a new l
 the pin symbol in the navigation bar.
 
 ## About facebook login
-Unfortunately this repo is quite large (almost 15 MB). This is mainly due to the large size of the facebook frameworks that lay in the
+Unfortunately this repo is quite large (almost 15 MB, unzipped almost 32 MB). This is mainly due to the large size of the facebook frameworks that lay in the
 project folder. Actually the frameworks should lay on the locale machine and the framework search path should be set accordingly.
 
 However because this project will be submitted to a Udacity reviewer it should work "out of the box" without a setup process for the reviewer and that's why I decided to lay the frameworks directly into the project.
