@@ -17,8 +17,9 @@ the pin symbol in the navigation bar.
 In order to use Facebook login you have to follow these steps:
 
 1. Download the [Facebook SDK](https://developers.facebook.com/docs/ios/getting-started/)
-2. Unzip it and put the files `Bolts.framework`, `FBSDKCoreKit.framework` and `FBSDKLoginKit.framework` into ~/Documents/FacebookSDK (if you put it in a different directory the project's Framework Search Path has to be set accordingly)
-3. Drag the files `Bolts.framework`, `FBSDKCoreKit.framework` and `FBSDKLoginKit.framework` in the Frameworks folder or to *Linked Frameworks and Libraries* in the general Target settings, check **Create groups for any added folders** and uncheck **Copy items into destination group's folder**. 
+2. Unzip it and put the files `Bolts.framework`, `FBSDKCoreKit.framework` and `FBSDKLoginKit.framework` into ~/Documents/FacebookSDK
+3. Add ~/Documents/FacebookSDK to the project's Framework Search Paths
+4. Drag the files `Bolts.framework`, `FBSDKCoreKit.framework` and `FBSDKLoginKit.framework` in the Frameworks folder or to *Linked Frameworks and Libraries* in the general Target settings, check **Create groups for any added folders** and uncheck **Copy items into destination group's folder**. 
 
 ## Screenshots
 ### Login Screen
