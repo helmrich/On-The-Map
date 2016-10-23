@@ -53,18 +53,19 @@ class LoginViewController: UIViewController {
         // Set the text field's delegates to be the LoginViewController
         emailTextField.delegate = self
         passwordTextField.delegate = self
-        
+
         // Add the facebook login button, make the LoginViewController its delegate and set its constraints
-        let facebookLoginButton = FBSDKLoginButton()
-        facebookLoginButton.delegate = self
-        view.addSubview(facebookLoginButton)
-        facebookLoginButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            NSLayoutConstraint(item: facebookLoginButton, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 16),
-            NSLayoutConstraint(item: facebookLoginButton, attribute: .trailing, relatedBy: .equal, toItem: view, attribute: .trailing, multiplier: 1, constant: -16),
-            NSLayoutConstraint(item: facebookLoginButton, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1, constant: -20),
-            NSLayoutConstraint(item: facebookLoginButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 50)
-            ])
+        // MARK: - Uncomment for Facebook login
+//        let facebookLoginButton = FBSDKLoginButton()
+//        facebookLoginButton.delegate = self
+//        view.addSubview(facebookLoginButton)
+//        facebookLoginButton.translatesAutoresizingMaskIntoConstraints = false
+//        NSLayoutConstraint.activate([
+//            NSLayoutConstraint(item: facebookLoginButton, attribute: .leading, relatedBy: .equal, toItem: view, attribute: .leading, multiplier: 1, constant: 16),
+//            NSLayoutConstraint(item: facebookLoginButton, attribute: .trailing, relatedBy: .equal, toItem: view, attribute: .trailing, multiplier: 1, constant: -16),
+//            NSLayoutConstraint(item: facebookLoginButton, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1, constant: -20),
+//            NSLayoutConstraint(item: facebookLoginButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 50)
+//            ])
         
         loginButton.addCenteredActivityIndicator()
         
@@ -181,55 +182,56 @@ extension LoginViewController {
 
 // MARK: - Facebook SDK login button delegate
 
-extension LoginViewController: FBSDKLoginButtonDelegate {
-    func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!) {
-    }
-    
-    func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
-        
-        // Check if there was an error
-        guard error == nil else {
-            presentAlertController(withMessage: error.localizedDescription)
-            return
-        }
-        
-        // Check if a result was received
-        guard let result = result else {
-            presentAlertController(withMessage: "Couldn't get result from facebook login.")
-            return
-        }
-        
-        // Check if the result has a token
-        guard result.token != nil else {
-            presentAlertController(withMessage: "Facebook login failed. Try again.")
-            return
-        }
-
-        // Assign the token to a constant...
-        let accessToken = result.token.tokenString
-        
-        // and pass it to the postSession method that takes the facebook access token instead of Udacity credentials
-        UdacityClient.sharedInstance.postSession(method: UdacityClient.Method.session.rawValue, userName: "", userPassword: "", facebookAccessToken: accessToken) { (sessionId, errorMessage) in
-            
-            // Check if there was an error
-            guard errorMessage == nil else {
-                self.presentAlertController(withMessage: errorMessage!)
-                return
-            }
-            
-            // Check if a session ID could be retrieved
-            guard let _ = sessionId else {
-                self.presentAlertController(withMessage: "Couldn't get session ID.")
-                return
-            }
-            
-            // Login successful -> Instantiate the tab bar controller from storyboard and present it
-            DispatchQueue.main.async {
-                let studentLocationTabBarController = self.storyboard!.instantiateViewController(withIdentifier: "studentLocationNavigationController")
-                self.present(studentLocationTabBarController, animated: true, completion: nil)
-            }
-            
-        }
-        
-    }
-}
+// MARK: - Uncomment for Facebook login
+//extension LoginViewController: FBSDKLoginButtonDelegate {
+//    func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!) {
+//    }
+//    
+//    func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
+//        
+//        // Check if there was an error
+//        guard error == nil else {
+//            presentAlertController(withMessage: error.localizedDescription)
+//            return
+//        }
+//        
+//        // Check if a result was received
+//        guard let result = result else {
+//            presentAlertController(withMessage: "Couldn't get result from facebook login.")
+//            return
+//        }
+//        
+//        // Check if the result has a token
+//        guard result.token != nil else {
+//            presentAlertController(withMessage: "Facebook login failed. Try again.")
+//            return
+//        }
+//
+//        // Assign the token to a constant...
+//        let accessToken = result.token.tokenString
+//        
+//        // and pass it to the postSession method that takes the facebook access token instead of Udacity credentials
+//        UdacityClient.sharedInstance.postSession(method: UdacityClient.Method.session.rawValue, userName: "", userPassword: "", facebookAccessToken: accessToken) { (sessionId, errorMessage) in
+//            
+//            // Check if there was an error
+//            guard errorMessage == nil else {
+//                self.presentAlertController(withMessage: errorMessage!)
+//                return
+//            }
+//            
+//            // Check if a session ID could be retrieved
+//            guard let _ = sessionId else {
+//                self.presentAlertController(withMessage: "Couldn't get session ID.")
+//                return
+//            }
+//            
+//            // Login successful -> Instantiate the tab bar controller from storyboard and present it
+//            DispatchQueue.main.async {
+//                let studentLocationTabBarController = self.storyboard!.instantiateViewController(withIdentifier: "studentLocationNavigationController")
+//                self.present(studentLocationTabBarController, animated: true, completion: nil)
+//            }
+//            
+//        }
+//        
+//    }
+//}

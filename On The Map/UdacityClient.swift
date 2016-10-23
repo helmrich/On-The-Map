@@ -193,9 +193,10 @@ class UdacityClient {
     }
     
     func logout(completionHandlerForLogout: @escaping (_ success: Bool, _ errorMessage: String?) -> Void) {
-        
+
         // Log out from Facebook
-        FBSDKLoginManager().logOut()
+        // MARK: - Uncomment for Facebook login
+//        FBSDKLoginManager().logOut()
         
         // Create mutable request and set its HTTP method
         let request = NSMutableURLRequest(url: udacityUrl(withMethod: Method.session.rawValue))
