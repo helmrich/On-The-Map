@@ -161,7 +161,7 @@ extension LoginViewController {
                 // The view is moved up by half of the height of the keyboard because it's not neccessary to display
                 // the facebook login button on the bottom when typing in the Udacity user information as the user obviously
                 // wants to log in via Udacity
-                view.frame.origin.y -= keyboardFrameEnd.cgRectValue.height / 2
+                view.frame.origin.y -= keyboardFrameEnd.cgRectValue.height / 1.25
             }
             // Make the udacity logo transparent
             udacityLogoImageView.alpha = 0.2
