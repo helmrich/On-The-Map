@@ -23,19 +23,6 @@ In order to use Facebook login you have to follow these steps:
 5. Uncomment marked Facebook login code
 
 ## Screenshots
-### Login Screen
-![Login Screen](https://github.com/helmrich/On-The-Map/blob/master/otm-login-screen.png "Login Screen")
-
-### Map View
-![Map View](https://github.com/helmrich/On-The-Map/blob/master/otm-map-view.png "Map View")
-
-### Table View
-![Table View](https://github.com/helmrich/On-The-Map/blob/master/otm-table-view.png "Table View")
-
-### Posting a Location - Finding a location
-![Posting a Location - Find location](https://github.com/helmrich/On-The-Map/blob/master/otm-information-posting-1.png "Posting a Location - Find location")
-
-### Adding a Link to the Location
-![Adding a Link to the Location](https://github.com/helmrich/On-The-Map/blob/master/otm-information-posting-2.png "Adding a link to the location")
+![Login Screen](https://github.com/helmrich/On-The-Map/blob/master/screenshots/otm-login-screen.png "Login Screen") ![Map View](https://github.com/helmrich/On-The-Map/blob/master/screenshots/otm-map-view.png "Map View") ![Table View](https://github.com/helmrich/On-The-Map/blob/master/screenshots/otm-table-view.png "Table View") ![Posting a Location - Find location](https://github.com/helmrich/On-The-Map/blob/master/screenshots/otm-information-posting-1.png "Posting a Location - Find location") ![Adding a Link to the Location](https://github.com/helmrich/On-The-Map/blob/master/screenshots/otm-information-posting-2.png "Adding a link to the location")
 
 
